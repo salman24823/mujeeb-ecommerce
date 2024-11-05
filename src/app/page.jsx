@@ -1,5 +1,7 @@
 export default function Home() {
   return (
-    <div>Nouman</div>
+    <div>
+      <h1>This site is under development...</h1>
+    </div>
   );
 }
