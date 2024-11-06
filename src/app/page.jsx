@@ -12,33 +12,33 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen w-full bg-gradient-to-r from-gray-900 via-gray-950 to-gray-900 flex items-center justify-center">
-      <div className="w-full sm:w-96 bg-gray-900 rounded-3xl px-8 py-10 shadow-2xl border border-gray-700">
+    <div className="p-5 h-screen gap-12 w-full bg-gradient-to-r from-gray-900 via-gray-950 to-gray-900 flex flex-col items-center justify-center">
+      <div className="w-full sm:w-96 bg-gray-900 rounded-3xl px-8 max-md:px-4 py-10 shadow-2xl border border-gray-700">
         <h2 className="text-xl font-semibold text-white mb-8 text-center">Website Logo Here !</h2>
 
         {/* Username Input */}
         <div className="relative mb-4">
-          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <User className="absolute max-md:w-5 h-5 left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Username"
-            className="w-full pl-12 p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
+            className="max-md:text-sm w-full max-md:pl-10 pl-12 p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
           />
         </div>
 
         {/* Password Input */}
-        <div className="relative mb-6">
-          <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <div className="relative mb-4">
+          <Key className="max-md:w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type={passwordVisible ? "text" : "password"}
             placeholder="Password"
-            className="w-full pl-12 p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
+            className="max-md:text-sm w-full max-md:pl-10 pl-12 p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
           />
           {/* Eye Icon to toggle password visibility */}
           <button
             type="button"
             onClick={togglePasswordVisibility}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            className="max-md:w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           >
             {passwordVisible ? <EyeOff /> : <Eye />}
           </button>
@@ -46,7 +46,7 @@ export default function Home() {
 
         <Button
           aria-label="Login"
-          className="w-full p-6 font-semibold text-medium bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-6 rounded-lg transition duration-300 ease-in-out"
+          className="w-full max-md:p-5 p-6 font-semibold max-md:text-sm max-md:font-normal text-medium bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-6 rounded-lg transition duration-300 ease-in-out"
         >
           Login
         </Button>
@@ -61,6 +61,9 @@ export default function Home() {
           </a>
         </div>
       </div>
+
+      <p className=" max-md:px-3 max-md:text-sm text-center text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisicing elit. consectetur adipisicing. </p>
+      
     </div>
   );
 }
