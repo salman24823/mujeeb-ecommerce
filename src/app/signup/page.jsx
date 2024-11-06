@@ -1,15 +1,20 @@
 "use client"
 
 import { Button } from "@nextui-org/react";
-import { User, Key, Eye, EyeOff } from 'lucide-react'; // Import the necessary icons
+import { User, AtSign, Key, Eye, EyeOff } from 'lucide-react'; // Added AtSign icon for Email
 import Link from "next/link";
 import { useState } from 'react';
 
-export default function Home() {
+export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false); // State for toggling confirm password visibility
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisible((prev) => !prev);
   };
 
   return (
@@ -45,26 +50,42 @@ export default function Home() {
           </button>
         </div>
 
+        {/* Confirm Password Input */}
+        <div className="relative mb-6">
+          <Key className="max-md:w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <input
+            type={confirmPasswordVisible ? "text" : "password"}
+            placeholder="Confirm Password"
+            className="max-md:text-sm w-full max-md:pl-10 pl-12 p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
+          />
+          {/* Eye Icon to toggle confirm password visibility */}
+          <button
+            type="button"
+            onClick={toggleConfirmPasswordVisibility}
+            className="max-md:w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          >
+            {confirmPasswordVisible ? <EyeOff /> : <Eye />}
+          </button>
+        </div>
+
+        {/* Sign Up Button */}
         <Button
-          aria-label="Login"
+          aria-label="Sign Up"
           className="w-full max-md:p-5 p-6 font-semibold max-md:text-sm max-md:font-normal text-medium bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-6 rounded-lg transition duration-300 ease-in-out"
         >
-          Login
+          Sign Up
         </Button>
 
         <div className="mt-6 text-center">
-          <span className="text-sm text-gray-400">Don't have an account? </span>
+          <span className="text-sm text-gray-400">Already have an account? </span>
           <Link
-            href="signup"
+            href="/"
             className="text-indigo-400 hover:text-indigo-500 transition duration-300 ease-in-out"
           >
-            Sign up
+            Log in
           </Link>
         </div>
       </div>
-
-      <p className=" max-md:px-3 max-md:text-sm text-center text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisicing elit. consectetur adipisicing. </p>
-      
     </div>
   );
 }
