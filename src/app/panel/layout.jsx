@@ -10,6 +10,14 @@ const Layout = ({ children }) => {
   const routes = [
     { name: "News", path: "/panel" },
     { name: "Wallet", path: "/panel/wallet" },
+    { name: "Dumps With Pin", path: "/panel/dumps-with-pin" },
+    { name: "Dumps No Pin", path: "/panel/dumps-no-pin" },
+    { name: "CVV", path: "/panel/cvv" },
+    { name: "Cart", path: "/panel/cart" },
+    { name: "Purchases", path: "/panel/purchases" },
+    { name: "Support", path: "/panel/support" },
+    { name: "Change Password", path: "/panel/change-password" },
+    { name: "Sign out", path: "/panel/sign-out" },
   ];
 
   return (
@@ -17,6 +25,10 @@ const Layout = ({ children }) => {
       {/* Sidebar */}
       <aside className="w-64 h-screen bg-gray-900 border-r border-gray-700 text-gray-400 py-4">
         <ul>
+          <li className="p-3 mb-4">
+            <p>User : Lorem Ipsum </p>
+          </li>
+
           {routes.map((route) => (
             <li key={route.path}>
               <Button
