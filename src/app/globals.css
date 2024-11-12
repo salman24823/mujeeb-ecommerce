@@ -2,26 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Waves Animation start*/
+
+.hero_area {
+  position: relative;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.waves {
+  position: fixed;
+  width: 100%;
+  height: 5vh;
+  min-height: 100px;
+  max-height: 150px;
+  bottom: 0;
+  left: 0;
+}
+
+.parallax > use {
+  animation: move-forever 25s cubic-bezier(.55, .5, .45, .5) infinite;
+}
+
+/* Adjust animation timing for each wave */
+.parallax > use:nth-child(1) {
+  animation-delay: -2s;
+  animation-duration: 7s;
+}
+
+.parallax > use:nth-child(2) {
+  animation-delay: -3s;
+  animation-duration: 10s;
+}
+
+.parallax > use:nth-child(3) {
+  animation-delay: -4s;
+  animation-duration: 13s;
+}
+
+.parallax > use:nth-child(4) {
+  animation-delay: -5s;
+  animation-duration: 20s;
+}
+
+/* Keyframes for wave movement */
+@keyframes move-forever {
+  0% {
+      transform: translate3d(-90px, 0, 0);
+  }
+
+  100% {
+      transform: translate3d(85px, 0, 0);
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+/* Shrinking waves for mobile */
+@media (max-width: 768px) {
+  .waves {
+      height: 40px;
+      min-height: 40px;
+  }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Waves Animation end */
+
+/* Wave colors with indigo shades */
+.parallax > use:nth-child(1) {
+  fill: #4c47e26b; /* Indigo with 70% opacity */
+}
+
+.parallax > use:nth-child(2) {
+  fill: #342dec7c; /* Indigo with 50% opacity */
+}
+
+.parallax > use:nth-child(3) {
+  fill: #605cee6b; /* Indigo with 30% opacity */
+}
+
+.parallax > use:nth-child(4) {
+  fill: #2e28ec46; /* Solid indigo */
 }

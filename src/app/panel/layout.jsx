@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@nextui-org/react";
-import { MdOutlineCreditCardOff  } from "react-icons/md";
+import { MdOutlineCreditCardOff } from "react-icons/md";
 
 import {
   Home,
@@ -37,7 +37,7 @@ const Layout = ({ children }) => {
     {
       name: "Dumps No Pin",
       path: "/panel/dumps-no-pin",
-      icon: <MdOutlineCreditCardOff  className="w-5 h-5 text-gray-500" />,
+      icon: <MdOutlineCreditCardOff className="w-5 h-5 text-gray-500" />,
     },
     {
       name: "CVV",
@@ -73,35 +73,37 @@ const Layout = ({ children }) => {
 
   return (
     <div className="flex">
-      {/* Sidebar */}
-      <aside className="w-64 h-screen bg-gray-900 border-r border-gray-700 text-gray-400 py-4">
-        <ul>
-          <li className="p-3 mb-4">
-            <p>User : Lorem Ipsum </p>
-          </li>
-
-          {routes.map((route) => (
-            <li key={route.path}>
-              <Button
-                className="p-0 w-full bg-gray-900 relative cursor-pointer hover:bg-gray-800 transition-all duration-300 ease-in-out text-blue-500"
-                radius="none"
-                >
-                <Link
-                  href={route.path}
-                  className={`text-start block p-3 ${
-                    pathname === route.path
-                      ? "w-full font-semibold text-blue-600 flex gap-3 bg-gray-800 border-r-4 border-blue-500"
-                      : "text-gray-400 flex gap-3 w-full"
-                  }`}
-                  >
-                  {route.icon}
-                  {route.name}
-                </Link>
-              </Button>
+      {/* Conditionally render Sidebar */}
+      {pathname !== "/panel/change-password" && (
+        <aside className="w-64 h-screen bg-gray-900 border-r border-gray-700 text-gray-400 py-4">
+          <ul>
+            <li className="p-3 mb-4">
+              <p>User : Lorem Ipsum </p>
             </li>
-          ))}
-        </ul>
-      </aside>
+
+            {routes.map((route) => (
+              <li key={route.path}>
+                <Button
+                  className="p-0 w-full bg-gray-900 relative cursor-pointer hover:bg-gray-800 transition-all duration-300 ease-in-out text-blue-500"
+                  radius="none"
+                >
+                  <Link
+                    href={route.path}
+                    className={`text-start block p-3 ${
+                      pathname === route.path
+                        ? "w-full font-semibold text-blue-600 flex gap-3 bg-gray-800 border-r-4 border-blue-500"
+                        : "text-gray-400 flex gap-3 w-full"
+                    }`}
+                  >
+                    {route.icon}
+                    {route.name}
+                  </Link>
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )}
 
       {/* Main Content Area */}
       <div className="flex-1 h-screen overflow-y-scroll w-full p-6 bg-gray-800 relative">
