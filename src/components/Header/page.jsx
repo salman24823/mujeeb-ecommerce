@@ -33,8 +33,6 @@ const Header = () => {
         return "News";
       case "/panel/cart":
         return "Cart";
-      case "/panel/change-password":
-        return "Change Password";
       case "/panel/dumps-no-pin":
         return "Dumps without Pin";
       case "/panel/dumps-with-pin":
@@ -46,7 +44,7 @@ const Header = () => {
       case "/panel/wallet":
         return "My Wallet";
       default:
-        return "Error"; // Default title for unmatched paths
+        return ""; // Default title for unmatched paths
     }
   };
 
