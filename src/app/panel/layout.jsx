@@ -13,6 +13,7 @@ import {
   HelpCircle,
   Lock,
   LogOut,
+  ClipboardEditIcon,
 } from "lucide-react";
 
 const Layout = ({ children }) => {
@@ -52,7 +53,7 @@ const Layout = ({ children }) => {
     {
       name: "Purchases",
       path: "/panel/purchases",
-      icon: <ShoppingCart className="w-5 h-5 text-gray-500" />,
+      icon: <ClipboardEditIcon className="w-5 h-5 text-gray-500" />,
     },
     {
       name: "Support",
