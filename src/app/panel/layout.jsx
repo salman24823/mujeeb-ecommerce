@@ -66,7 +66,7 @@ const Layout = ({ children }) => {
     },
     {
       name: "Sign out",
-      path: "/panel/sign-out",
+      path: "/",
       icon: <LogOut className="w-5 h-5 text-gray-500" />,
     },
   ];
