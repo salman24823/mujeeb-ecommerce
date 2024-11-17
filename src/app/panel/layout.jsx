@@ -103,10 +103,10 @@ const Layout = ({ children }) => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 h-screen overflow-y-scroll w-full p-6 bg-gray-800 relative">
+      <div className="flex-1 h-[92vh] overflow-y-scroll w-full p-6 bg-gray-800 relative">
         <div
           key={pathname}
-          style={{ position: "relative", width: "100%", height: "100%" }}
+          style={{ width: "100%" }}
         >
           {children}
         </div>

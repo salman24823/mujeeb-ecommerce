@@ -82,7 +82,7 @@ const Header = () => {
   };
 
   return (
-    <div className="bg-gray-900 border-b flex border-gray-700 h-14">
+    <div className="bg-gray-900 border-b flex border-gray-700 h-[8vh]">
       <div className="w-64 px-2 text-gray-500 gap-2 flex items-center h-full">
         <UserRound size={24} className="text-gray-500" />
         <p className="text-gray-500">Lorem Ipsum</p>
