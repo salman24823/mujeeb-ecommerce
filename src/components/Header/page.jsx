@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-// import { UserRound } from "lucide-react";
+import { UserRound } from "lucide-react";
 
 const Header = () => {
+  
   // const [currentPath, setCurrentPath] = useState("");
 
   // useEffect(() => {
