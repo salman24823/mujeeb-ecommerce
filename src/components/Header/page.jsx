@@ -1,56 +1,83 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { UserRound } from "lucide-react";
+import {
+  Clipboard,
+  ClipboardEditIcon,
+  CreditCard,
+  Headset,
+  Home,
+  ShoppingCart,
+  UserRound,
+  Wallet,
+} from "lucide-react";
 
-import { usePathname } from 'next/navigation'
-
+import { usePathname } from "next/navigation";
+import { MdOutlineCreditCardOff } from "react-icons/md";
 
 const Header = () => {
-
-  const pathname = usePathname()
-
+  const pathname = usePathname();
 
   const [currentPath, setCurrentPath] = useState("");
 
-
   useEffect(() => {
+    const url = pathname;
 
-    const url = pathname
-
-    console.log(url)
+    console.log(url);
 
     setCurrentPath(url);
-    console.log(url,"current path")
-
+    console.log(url, "current path");
   }, [pathname]);
-
 
   // Define the title based on the current URL path
   const getTitle = () => {
+    let title;
+    let Icon;
+
     switch (currentPath) {
       case "/panel":
-        return "News";
+        title = "News";
+        Icon = Home; // Example icon for "News"
+        break;
       case "/":
-        return "";
+        title = "";
+        Icon = null; // No icon
+        break;
       case "/panel/cart":
-        return "Cart";
+        title = "Cart";
+        Icon = ShoppingCart;
+        break;
       case "/panel/cvv":
-        return "CVV";
+        title = "CVV";
+        Icon = CreditCard; // Example icon for "CVV"
+        break;
       case "/panel/change-password":
-        return "";
+        title = "";
+        Icon = null; // No icon
+        break;
       case "/panel/dumps-no-pin":
-        return "Dumps without Pin";
+        title = "Dumps without Pin";
+        Icon = MdOutlineCreditCardOff; // Example icon for "Dumps without Pin"
+        break;
       case "/panel/dumps-with-pin":
-        return "Dumps with Pin";
+        title = "Dumps with Pin";
+        Icon = Clipboard; // Example icon for "Dumps with Pin"
+        break;
       case "/panel/purchases":
-        return "My Purchase History";
+        title = "My Purchase History";
+        Icon = ClipboardEditIcon; // Example icon for "Purchase History"
+        break;
       case "/panel/support":
-        return "Support";
+        title = "Support";
+        Icon = Headset; // Example icon for "Support"
+        break;
       case "/panel/wallet":
-        return "My Wallet";
+        title = "My Wallet";
+        Icon = Wallet;
+        break;
       default:
-        return ""; // Default title for unmatched paths
+        title = "";
+        Icon = null; // Default case, no icon
     }
   };
 
@@ -59,12 +86,11 @@ const Header = () => {
       <div className="w-64 px-2 text-gray-500 gap-2 flex items-center h-full">
         <UserRound size={24} className="text-gray-500" />
         <p className="text-gray-500">Lorem Ipsum</p>
-
       </div>
 
-      <div className="flex-1 flex items-center justify-center text-xl font-semibold">
+      <div className="gap-3 flex items-center text-xl font-semibold">
+        {Icon && <Icon className="mr-2 text-indigo-600" />}
         <h1 className="text-gray-200">{getTitle()}</h1>
-        {/* <h1 className="text-gray-200"> {currentPath} </h1> */}
       </div>
     </div>
   );
