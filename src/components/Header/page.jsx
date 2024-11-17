@@ -60,7 +60,7 @@ const Header = () => {
 
       <div className="flex-1 flex items-center justify-center text-xl font-semibold">
         <h1 className="text-gray-200">{getTitle()}</h1>
-        <h1 className="text-gray-200"> {currentPath} </h1>
+        {/* <h1 className="text-gray-200"> {currentPath} </h1> */}
       </div>
     </div>
   );
