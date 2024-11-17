@@ -31,8 +31,14 @@ const Header = () => {
     switch (currentPath) {
       case "/panel":
         return "News";
+      case "/":
+        return "";
       case "/panel/cart":
         return "Cart";
+      case "/panel/cvv":
+        return "CVV";
+      case "/panel/change-password":
+        return "";
       case "/panel/dumps-no-pin":
         return "Dumps without Pin";
       case "/panel/dumps-with-pin":
