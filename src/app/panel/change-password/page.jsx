@@ -60,6 +60,7 @@ const ChangePassword = () => {
                     : "focus:ring-indigo-500"
                 }`}
               />
+              
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
