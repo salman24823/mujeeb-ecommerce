@@ -86,10 +86,10 @@ const News = () => {
     <div className="w-full h-full text-white space-y-6">
 
       {/* Title */}
-      <div className="text-xl font-semibold flex items-center space-x-2">
+      {/* <div className="text-xl font-semibold flex items-center space-x-2">
         <h1>NEW OFFICIAL UPDATE CHANNEL</h1>
         <Link className="text-indigo-500" />
-      </div>
+      </div> */}
 
       <div className="space-y-6">
         {promoNews.map((promo, index) => (

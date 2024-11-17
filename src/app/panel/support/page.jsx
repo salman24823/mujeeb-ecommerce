@@ -48,9 +48,9 @@ const Support = () => {
     <div className="space-y-8 max-w-screen-xl mx-auto">
 
       {/* Title and Header */}
-      <div className="text-xl font-semibold flex items-center space-x-2">
+      {/* <div className="text-xl font-semibold flex items-center space-x-2">
         <h1 className="text-gray-200">Support Channel</h1>
-      </div>
+      </div> */}
 
       {/* Support Form Section */}
       <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
