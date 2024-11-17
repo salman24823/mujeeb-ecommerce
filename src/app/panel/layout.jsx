@@ -72,15 +72,11 @@ const Layout = ({ children }) => {
   ];
 
   return (
-    <div className="flex">
+    <div className="flex bg-gray-900">
       {/* Conditionally render Sidebar */}
       {pathname !== "/panel/change-password" && (
-        <aside className="w-64 h-screen bg-gray-900 border-r border-gray-700 text-gray-400 py-4">
+        <aside className="w-64 h-screen pt-4 border-r border-gray-700 bg-gray-900 text-gray-400">
           <ul>
-            <li className="p-3 mb-4">
-              <p>User : Lorem Ipsum </p>
-            </li>
-
             {routes.map((route) => (
               <li key={route.path}>
                 <Button

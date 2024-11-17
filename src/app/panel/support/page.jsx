@@ -45,7 +45,7 @@ const Support = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-screen-xl mx-auto px-6 py-10">
+    <div className="space-y-8 max-w-screen-xl mx-auto">
 
       {/* Title and Header */}
       <div className="text-xl font-semibold flex items-center space-x-2">

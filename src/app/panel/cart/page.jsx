@@ -43,11 +43,12 @@ const Cart = () => {
   );
 
   return (
-    <div className="space-y-8 max-w-screen-xl mx-auto px-4 py-8">
+    <div className="space-y-8 max-w-screen-xl mx-auto">
+
       {/* Cart Header */}
-      <div className="text-xl font-semibold flex items-center space-x-2">
+      {/* <div className="text-xl font-semibold flex items-center space-x-2">
         <h1 className="text-gray-200">Shopping Cart</h1>
-      </div>
+      </div> */}
 
       {/* Cart Summary Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -183,6 +184,7 @@ const Cart = () => {
           </tbody>
         </table>
       </div>
+
     </div>
   );
 };

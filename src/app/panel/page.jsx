@@ -83,7 +83,7 @@ const News = () => {
   ];
 
   return (
-    <div className="w-full h-full text-white p-3 space-y-6">
+    <div className="w-full h-full text-white space-y-6">
 
       {/* Title */}
       <div className="text-xl font-semibold flex items-center space-x-2">
