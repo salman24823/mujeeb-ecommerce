@@ -2,6 +2,10 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";
 import Header from "@/components/Header/page";
+import SessionWrapper from "@/components/SessionWrapper/SessionWrapper";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,10 +29,13 @@ export default function RootLayout({ children }) {
       <body
         className={`overflow-y-hidden ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextUIProvider>
-          <Header />
-          {children}
-        </NextUIProvider>
+        <SessionWrapper>
+        <ToastContainer position="top-center" autoClose={5000} />
+          <NextUIProvider>
+            <Header />
+            {children}
+          </NextUIProvider>
+        </SessionWrapper>
       </body>
     </html>
   );

@@ -1,20 +1,18 @@
-// middleware.js (or middleware.ts for TypeScript)
+// middleware.js (or middleware.ts)
+import { withAuth } from "next-auth/middleware";
 
-import { NextResponse } from 'next/server';
+export default withAuth({
+  pages: {
+    signIn: '/',  // Customize the login page if the user is not authenticated
+    error: '/',   // Customize the error page
+  },
+  // This ensures the middleware applies to all paths in the app
+  secret: process.env.NEXTAUTH_SECRET, // Make sure you set a secret for better security (optional but recommended)
+});
 
-export function middleware(request) {
-  // Create a response object with cache-control headers
-  const response = NextResponse.next();
-
-  // Set the cache-control headers to disable caching
-  response.headers.set('Cache-Control', 'no-store');
-
-  console.log("cache false")
-
-  return response;
-}
-
-// Apply the middleware globally to all routes
 export const config = {
-  matcher: ['/', '/api/:path*', '/pages/:path*'],  // This applies to all pages and API routes
+  matcher: [
+    // Protect all pages except for the home page '/'
+    "/((?!_next|static|favicon.ico|^/$).*)",  // Exclude home page
+  ],
 };

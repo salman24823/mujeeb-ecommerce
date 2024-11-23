@@ -15,8 +15,12 @@ import {
   LogOut,
   ClipboardEditIcon,
 } from "lucide-react";
+import { useSession , signOut } from "next-auth/react";
 
 const Layout = ({ children }) => {
+
+  const { data: session } = useSession();
+
   const pathname = usePathname();
 
   const routes = [
@@ -69,6 +73,8 @@ const Layout = ({ children }) => {
       name: "Sign out",
       path: "/",
       icon: <LogOut className="w-5 h-5 text-gray-500" />,
+      onClick: () => signOut(),
+
     },
   ];
 
@@ -83,6 +89,7 @@ const Layout = ({ children }) => {
                 <Button
                   className="p-0 w-full bg-gray-900 relative cursor-pointer hover:bg-gray-800 transition-all duration-300 ease-in-out text-blue-500"
                   radius="none"
+                  onClick={route.onClick} // Attach the onClick handler here
                 >
                   <Link
                     href={route.path}
