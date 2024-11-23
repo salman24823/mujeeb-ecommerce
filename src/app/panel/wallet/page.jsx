@@ -126,7 +126,7 @@ const Wallet = () => {
           <div className="flex items-center space-x-3">
             <User className="text-indigo-500 w-6 h-6" />
             <span className="text-indigo-500 text-2xl font-semibold">
-              {session.user.username}
+              {session?.user?.username}
             </span>
           </div>
 
