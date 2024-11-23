@@ -13,6 +13,6 @@ export default withAuth({
 export const config = {
   matcher: [
     // Protect all pages except for the home page '/'
-    "/((?!_next|static|favicon.ico|^/$).*)",  // Exclude home page
+    "/((?!_next|static|favicon.ico|^/$|^/signup).*)",  // Exclude home page and register page
   ],
 };
