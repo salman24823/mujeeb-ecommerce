@@ -40,7 +40,7 @@ export default function Home() {
         toast.error("Error in login: Invalid Email or Password");
       } else {
         toast.success("Login Successful. Redirecting...")
-        router.push("/panel"); // Navigate to dashboard
+        router.push("/panel/wallet"); // Navigate to dashboard
       }
     } catch (error) {
       console.log(error);

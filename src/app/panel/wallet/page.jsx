@@ -23,6 +23,7 @@ import {
   Title,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { useSession } from "next-auth/react";
 
 ChartJS.register(
   BarElement,
@@ -35,6 +36,9 @@ ChartJS.register(
 );
 
 const Wallet = () => {
+
+  const { data: session } = useSession();
+
   const barChartData = {
     labels: ["Day", "Week", "Month", "Year"],
     datasets: [
@@ -122,7 +126,7 @@ const Wallet = () => {
           <div className="flex items-center space-x-3">
             <User className="text-indigo-500 w-6 h-6" />
             <span className="text-indigo-500 text-2xl font-semibold">
-              User Name
+              {session.user.username}
             </span>
           </div>
 
@@ -135,18 +139,16 @@ const Wallet = () => {
             <div className="text-3xl font-bold text-white">$1,200.00</div>
           </div>
 
-            {/* Account ID Section */}
-            <div className="text-gray-400 text-sm space-y-1">
-              <div className="flex items-center space-x-2">
-                <Key className="text-gray-500 w-5 h-5" />
-                <div>Your Account ID:</div>
-              </div>
-              <div className="text-xs text-gray-500 break-all">
-                abc123xyz789
-              </div>
+          {/* Account ID Section */}
+          <div className="text-gray-400 text-sm space-y-1">
+            <div className="flex items-center space-x-2">
+              <Key className="text-gray-500 w-5 h-5" />
+              <div>Your Account ID:</div>
             </div>
+            <div className="text-xs text-gray-500 break-all">abc123xyz789</div>
+          </div>
 
-            {/* Email Section
+          {/* Email Section
             <div className="text-gray-400 text-sm space-y-1">
               <div className="flex items-center space-x-2">
                 <Mail className="text-gray-500 w-5 h-5" />
