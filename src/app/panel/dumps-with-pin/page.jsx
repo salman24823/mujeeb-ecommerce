@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import { Button } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
 import { BoxIcon, ChevronDown, CreditCard, Filter } from "lucide-react";
 
 const DumpsWithPin = () => {
   // Fixing initial state of products (should be an array)
-  const [products, setProducts] = useState([ ]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [filterItems, setFilterItems] = useState([
     { label: "Type", key: "type" },
@@ -57,7 +58,6 @@ const DumpsWithPin = () => {
     return [...new Set(products.map((product) => product[key] || ""))];
   };
 
-
   // fetchPins
   const fetchPins = async () => {
     try {
@@ -76,8 +76,7 @@ const DumpsWithPin = () => {
 
   // Close dropdown if clicked outside
   useEffect(() => {
-
-    fetchPins()
+    fetchPins();
 
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -90,7 +89,6 @@ const DumpsWithPin = () => {
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-
       {/* <div className="text-xl font-semibold flex items-center space-x-2">
         <h1 className="text-gray-200">DUMPS WITH PIN CARDS</h1>
         <CreditCard className="text-indigo-500" />
@@ -159,83 +157,92 @@ const DumpsWithPin = () => {
           <span>Dumps with Pin</span>
         </div>
 
-        <table className="min-w-full text-sm text-gray-400">
-          {/* Table Headings */}
-          <thead>
-            <tr className="border-b border-gray-700">
-              <td className="py-3 px-4 text-left text-sm font-semibold">BIN</td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                CODE
-              </td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                TYPE
-              </td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                SUBTYPE
-              </td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                CREDIT
-              </td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                COUNTRY
-              </td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                BANK
-              </td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                BASE
-              </td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">QTY</td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                PRICE
-              </td>
-              <td className="py-3 px-4 text-left text-sm font-semibold">
-                ACTION
-              </td>
-            </tr>
-          </thead>
-
-          {/* Table Body */}
-          <tbody>
-            {filteredProducts.length === 0 ? (
-              <tr>
-                <td
-                  colSpan="11"
-                  className="py-3 px-4 text-center text-gray-500"
-                >
-                  No Products Available
+        {loading ? (
+          <div className="w-full flex justify-center h-20 items-center">
+            <Spinner className="w-fit" color="white" />
+          </div>
+        ) : (
+          <table className="min-w-full text-sm text-gray-400">
+            {/* Table Headings */}
+            <thead>
+              <tr className="border-b border-gray-700">
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  BIN
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  CODE
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  TYPE
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  SUBTYPE
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  CREDIT
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  COUNTRY
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  BANK
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  BASE
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  QTY
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  PRICE
+                </td>
+                <td className="py-3 px-4 text-left text-sm font-semibold">
+                  ACTION
                 </td>
               </tr>
-            ) : (
-              filteredProducts.map((product, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
-                >
-                  <td className="py-3 px-4">{product.bin}</td>
-                  <td className="py-3 px-4">{product.code}</td>
-                  <td className="py-3 px-4">{product.type}</td>
-                  <td className="py-3 px-4">{product.subtype}</td>
-                  <td className="py-3 px-4">{product.credit}</td>
-                  <td className="py-3 px-4">{product.country}</td>
-                  <td className="py-3 px-4">{product.bank}</td>
-                  <td className="py-3 px-4">{product.base}</td>
-                  <td className="py-3 px-4">{product.qty}</td>
-                  <td className="py-3 px-4">{product.price}</td>
-                  <td className="py-3 px-4">
-                    <Button
-                      color="secondary"
-                      size="sm"
-                      className="bg-gray-700 hover:bg-gray-600 text-white focus:ring-2 focus:ring-indigo-600 transition-all"
-                    >
-                      {product.action}
-                    </Button>
+            </thead>
+
+            {/* Table Body */}
+            <tbody>
+              {filteredProducts.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="11"
+                    className="py-3 px-4 text-center text-gray-500"
+                  >
+                    No Products Available
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filteredProducts.map((product, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
+                  >
+                    <td className="py-3 px-4">{product.bin}</td>
+                    <td className="py-3 px-4">{product.code}</td>
+                    <td className="py-3 px-4">{product.type}</td>
+                    <td className="py-3 px-4">{product.subtype}</td>
+                    <td className="py-3 px-4">{product.credit}</td>
+                    <td className="py-3 px-4">{product.country}</td>
+                    <td className="py-3 px-4">{product.bank}</td>
+                    <td className="py-3 px-4">{product.base}</td>
+                    <td className="py-3 px-4">{product.qty}</td>
+                    <td className="py-3 px-4">{product.price}</td>
+                    <td className="py-3 px-4">
+                      <Button
+                        size="sm"
+                        className="bg-green-800 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-600 transition-all"
+                      >
+                        Buy Now
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
