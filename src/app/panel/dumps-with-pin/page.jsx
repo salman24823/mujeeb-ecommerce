@@ -6,35 +6,7 @@ import { BoxIcon, ChevronDown, CreditCard, Filter } from "lucide-react";
 
 const DumpsWithPin = () => {
   // Fixing initial state of products (should be an array)
-  const [products, setProducts] = useState([
-    {
-      bin: "123456",
-      code: "P001",
-      type: "EBT",
-      subtype: "GOLD",
-      credit: "$500",
-      country: "USA",
-      bank: "XYZ Bank",
-      base: "USD",
-      qty: 10,
-      price: "$50",
-      action: "Add To Cart",
-    },
-    {
-      bin: "654321",
-      code: "P002",
-      type: "VISA",
-      subtype: "CLASSIC",
-      credit: "$200",
-      country: "Canada",
-      bank: "ABC Bank",
-      base: "CAD",
-      qty: 15,
-      price: "$50",
-      action: "Add To Cart",
-    },
-    // Add more products as needed
-  ]);
+  const [products, setProducts] = useState([ ]);
 
   const [filterItems, setFilterItems] = useState([
     { label: "Type", key: "type" },
@@ -85,8 +57,28 @@ const DumpsWithPin = () => {
     return [...new Set(products.map((product) => product[key] || ""))];
   };
 
+
+  // fetchPins
+  const fetchPins = async () => {
+    try {
+      const response = await fetch("/api/fetchPins/pins");
+      if (!response.ok) {
+        throw new Error("Failed to fetch pins");
+      }
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching pins:", error);
+    } finally {
+      setLoading(false); // Set loading to false once data is fetched
+    }
+  };
+
   // Close dropdown if clicked outside
   useEffect(() => {
+
+    fetchPins()
+
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(null);

@@ -4,37 +4,9 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Button } from "@nextui-org/react";
 import { BoxIcon, ChevronDown, CreditCard, Filter } from "lucide-react";
 
-const DumpsNoPin = () => {
+const DumpsWithNoPin = () => {
   // Fixing initial state of products (should be an array)
-  const [products, setProducts] = useState([
-    {
-      bin: "123456",
-      code: "P001",
-      type: "EBT",
-      subtype: "GOLD",
-      credit: "$500",
-      country: "USA",
-      bank: "XYZ Bank",
-      base: "USD",
-      qty: 10,
-      price: "$50",
-      action: "Add To Cart",
-    },
-    {
-      bin: "654321",
-      code: "P002",
-      type: "VISA",
-      subtype: "CLASSIC",
-      credit: "$200",
-      country: "Canada",
-      bank: "ABC Bank",
-      base: "CAD",
-      qty: 15,
-      price: "$50",
-      action: "Add To Cart",
-    },
-    // Add more products as needed
-  ]);
+  const [products, setProducts] = useState([ ]);
 
   const [filterItems, setFilterItems] = useState([
     { label: "Type", key: "type" },
@@ -85,8 +57,28 @@ const DumpsNoPin = () => {
     return [...new Set(products.map((product) => product[key] || ""))];
   };
 
+
+  // fetchPins
+  const fetchPins = async () => {
+    try {
+      const response = await fetch("/api/fetchPins/noPins");
+      if (!response.ok) {
+        throw new Error("Failed to fetch pins");
+      }
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching pins:", error);
+    } finally {
+      setLoading(false); // Set loading to false once data is fetched
+    }
+  };
+
   // Close dropdown if clicked outside
   useEffect(() => {
+
+    fetchPins()
+
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(null);
@@ -100,7 +92,7 @@ const DumpsNoPin = () => {
     <div className="space-y-8 max-w-screen-xl mx-auto">
 
       {/* <div className="text-xl font-semibold flex items-center space-x-2">
-        <h1 className="text-gray-200">DUMPS WITH NO PIN CARDS</h1>
+        <h1 className="text-gray-200">DUMPS WITH PIN CARDS</h1>
         <CreditCard className="text-indigo-500" />
       </div> */}
 
@@ -249,4 +241,4 @@ const DumpsNoPin = () => {
   );
 };
 
-export default DumpsNoPin;
+export default DumpsWithNoPin;
