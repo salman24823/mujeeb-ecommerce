@@ -89,6 +89,7 @@ const DumpsWithPin = () => {
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
+      
       {/* <div className="text-xl font-semibold flex items-center space-x-2">
         <h1 className="text-gray-200">DUMPS WITH PIN CARDS</h1>
         <CreditCard className="text-indigo-500" />

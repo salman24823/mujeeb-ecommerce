@@ -15,7 +15,8 @@ const Support = () => {
   const [replies, setReplies] = useState([
     {
       admin: "Admin",
-      message: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, eaque! Dolore sunt error porro ipsum unde corporis esse!",
+      message:
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, eaque! Dolore sunt error porro ipsum unde corporis esse!",
     },
   ]);
 
@@ -35,7 +36,10 @@ const Support = () => {
     // Simulate an admin reply after submitting the form
     setReplies((prev) => [
       ...prev,
-      { admin: "Admin", message: `Thank you, ${formData.name}. We've received your message and are processing it.` },
+      {
+        admin: "Admin",
+        message: `Thank you, ${formData.name}. We've received your message and are processing it.`,
+      },
     ]);
     setFormData({
       name: "",
@@ -46,7 +50,6 @@ const Support = () => {
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-
       {/* Title and Header */}
       {/* <div className="text-xl font-semibold flex items-center space-x-2">
         <h1 className="text-gray-200">Support Channel</h1>
@@ -63,7 +66,9 @@ const Support = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Field */}
           <div>
-            <label htmlFor="name" className="block text-sm text-gray-400 mb-2">Full Name</label>
+            <label htmlFor="name" className="block text-sm text-gray-400 mb-2">
+              Full Name
+            </label>
             <input
               type="text"
               id="name"
@@ -78,7 +83,12 @@ const Support = () => {
 
           {/* Subject Field */}
           <div>
-            <label htmlFor="subject" className="block text-sm text-gray-400 mb-2">Subject</label>
+            <label
+              htmlFor="subject"
+              className="block text-sm text-gray-400 mb-2"
+            >
+              Subject
+            </label>
             <input
               type="text"
               id="subject"
@@ -93,7 +103,12 @@ const Support = () => {
 
           {/* Message Field */}
           <div>
-            <label htmlFor="message" className="block text-sm text-gray-400 mb-2">Message</label>
+            <label
+              htmlFor="message"
+              className="block text-sm text-gray-400 mb-2"
+            >
+              Message
+            </label>
             <textarea
               id="message"
               name="message"
@@ -107,7 +122,7 @@ const Support = () => {
           </div>
 
           {/* Submit Button */}
-          <SubmitModel />
+          <SubmitModel formData={formData} />
         </form>
       </div>
 
@@ -120,7 +135,10 @@ const Support = () => {
 
         <div className="space-y-6">
           {replies.map((reply, index) => (
-            <div key={index} className="bg-gray-800 mt-10 p-4 rounded-lg shadow-sm">
+            <div
+              key={index}
+              className="bg-gray-800 mt-10 p-4 rounded-lg shadow-sm"
+            >
               <div className="flex items-center space-x-2">
                 <MessageSquareText className="text-indigo-500" />
                 <div className="text-sm text-indigo-400">{reply.admin}</div>

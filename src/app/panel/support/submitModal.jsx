@@ -8,16 +8,42 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react";
+import { toast } from "react-toastify";
 
 // React component
-export default function SubmitModel() {
+export default function SubmitModel({formData}) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  async function handleSubmitForm() {
+    try {
+      const response = await fetch("/api/submitForm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Handle successful response
+        toast.success("Sign up Success. Redirecting...");
+        onOpen()
+      } else {
+        // Handle error response
+        toast.error(data.message || "Something went wrong");
+      }
+    } catch (error) {
+      setError("An error occurred while creating the user");
+    }
+  }
 
   return (
     <>
       <Button
         className="hover:bg-indigo-600 hover:text-white hover:border-0 w-full border border-indigo-500 bg-transparent text-indigo-500 font-semibold py-3 rounded-md focus:outline-none transition-colors duration-300 ease-in-out"
-        onPress={onOpen}
+        onPress={handleSubmitForm}
       >
         Submit
       </Button>
