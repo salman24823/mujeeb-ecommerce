@@ -4,11 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Bar } from "react-chartjs-2";
-import {
-  CreditCard,
-  User,
-  DollarSign,
-} from "lucide-react";
+import { CreditCard, User, DollarSign } from "lucide-react";
 
 import {
   Chart as ChartJS,
@@ -21,6 +17,7 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useSession } from "next-auth/react";
+import AddFunds from "./AddFunds";
 
 ChartJS.register(
   BarElement,
@@ -35,6 +32,7 @@ ChartJS.register(
 const Wallet = () => {
   const { data: session } = useSession();
   const [userDetails, setUserDetails] = useState();
+
   const [transactions, setTransactions] = useState([
     {
       date: "2024-11-10",
@@ -149,10 +147,6 @@ const Wallet = () => {
     }
   }
 
-  const addFunds = () => {
-    alert("Add Funds function");
-  };
-
   useEffect(() => {
     if (session?.user?.id) {
       handleDetails();
@@ -162,8 +156,7 @@ const Wallet = () => {
 
   return (
     <div className="w-full bg-gray-800 text-white rounded-lg shadow-xl space-y-8">
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 max-[770px]:gap-2 gap-8">
         <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-lg space-y-6">
           <div className="flex items-center space-x-3">
             <User className="text-indigo-500 w-6 h-6" />
@@ -172,23 +165,21 @@ const Wallet = () => {
             </span>
           </div>
 
-          <div className="text-gray-400 text-sm space-y-1">
+          <div className="text-gray-400 flex justify-between text-sm">
             <div className="flex items-center space-x-2">
               <DollarSign className="text-green-400 w-5 h-5" />
-              <div>Total Balance:</div>
+              <div className="text-xl font-semibold">Total Balance:</div>
             </div>
-            <div className="text-3xl font-bold text-white">
+
+            <div className="text-xl font-light text-gray-200">
               {userDetails?.result.balance || "Loading..."}
             </div>
           </div>
 
-          <Button
-            onClick={addFunds}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-2 rounded-lg flex items-center justify-center space-x-2"
-          >
-            <CreditCard className="w-5 h-5" />
-            <span>Add Funds</span>
-          </Button>
+          <hr className="border-[1px] border-gray-600" />
+
+          {/* payement button */}
+          <AddFunds />
         </div>
 
         <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-lg">
@@ -203,7 +194,7 @@ const Wallet = () => {
         </div>
       </div>
 
-      <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-lg">
+      <div className="margin_div bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-lg">
         <div className="text-indigo-500 text-lg mb-4 flex items-center space-x-2">
           <ArrowDownRight size={24} />
           <span>Transaction History</span>
@@ -213,17 +204,28 @@ const Wallet = () => {
           <table className="min-w-full text-sm text-gray-400">
             <thead>
               <tr className="border-b border-gray-700">
-                <th className="py-3 px-4 text-left">Date</th>
-                <th className="py-3 px-4 text-left">Transaction</th>
-                <th className="py-3 px-4 text-left">Transaction ID</th>
-                <th className="py-3 px-4 text-left">Amount</th>
-                <th className="py-3 px-4 text-left">Order Details</th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">Date</th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">
+                  Transaction
+                </th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">
+                  Transaction ID
+                </th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">
+                  Amount
+                </th>
+                <th className="py-3 px-4 text-left whitespace-nowrap">
+                  Order Details
+                </th>
               </tr>
             </thead>
             <tbody>
               {transactions.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="py-3 px-4 text-center text-gray-500">
+                  <td
+                    colSpan="5"
+                    className="py-3 px-4 text-center text-gray-500"
+                  >
                     No Transactions Available
                   </td>
                 </tr>
@@ -233,11 +235,17 @@ const Wallet = () => {
                     key={index}
                     className="border-b border-gray-700 hover:bg-gray-700 transition-colors"
                   >
-                    <td className="py-3 px-4">{txn.date}</td>
-                    <td className="py-3 px-4">{txn.type}</td>
-                    <td className="py-3 px-4">{txn.transactionId}</td>
-                    <td className={`py-3 px-4 ${txn.color}`}>{txn.amount}</td>
-                    <td className="py-3 px-4">{txn.orderDetails}</td>
+                    <td className="py-3 px-4 whitespace-nowrap">{txn.date}</td>
+                    <td className="py-3 px-4 whitespace-nowrap">{txn.type}</td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      {txn.transactionId}
+                    </td>
+                    <td className={`py-3 px-4 ${txn.color} whitespace-nowrap`}>
+                      {txn.amount}
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      {txn.orderDetails}
+                    </td>
                   </tr>
                 ))
               )}

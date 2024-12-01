@@ -117,7 +117,7 @@ const DumpsWithPin = () => {
           <span>Select the Filters</span>
         </div>
 
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 max-[770px]:grid-cols-1 gap-2">
           {filterItems.map(({ label, key }) => (
             <div key={key} className="relative">
               <Button
@@ -137,10 +137,6 @@ const DumpsWithPin = () => {
                 <div
                   ref={dropdownRef}
                   className="absolute mt-2  left-0 w-52 p-1 overflow-hidden bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-10 transform transition-all duration-300 ease-out"
-                  // style={{
-                  //   opacity: 1, // Dropdown becomes fully visible
-                  //   transform: "translateY(0)", // Dropdown slides down
-                  // }}
                 >
                   <div>
                     {getUniqueValues(key).map((value) => (
@@ -167,128 +163,106 @@ const DumpsWithPin = () => {
       </div>
 
       {/* Table Section */}
-      <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
-        <div className="text-indigo-500 text-lg mb-4 flex items-center space-x-2">
-          <BoxIcon size={24} />
-          <span>Dumps with Pin</span>
-        </div>
+      <div className="bg-gray-900 border margin_div border-slate-700 p-6 rounded-lg shadow-xl">
+  <div className="text-indigo-500 text-lg mb-4 flex items-center space-x-2">
+    <BoxIcon size={24} />
+    <span>Dumps with Pin</span>
+  </div>
 
-        {loading ? (
-          <div className="w-full flex justify-center h-20 items-center">
-            <Spinner className="w-fit" color="white" />
-          </div>
-        ) : (
-          <table className="min-w-full text-sm text-gray-400">
-            {/* Table Headings */}
-            <thead>
-              <tr className="border-b border-gray-700">
-        
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  TYPE
+  {loading ? (
+    <div className="w-full flex justify-center h-20 items-center">
+      <Spinner className="w-fit" color="white" />
+    </div>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-sm text-gray-400">
+        {/* Table Headings */}
+        <thead>
+          <tr className="border-b border-gray-700">
+            <td className="py-3 px-4 text-left text-sm font-semibold">TYPE</td>
+            <td className="py-3 px-4 text-left text-sm font-semibold">BRAND</td>
+            <td className="py-3 px-4 text-left text-sm font-semibold">CATEGORY</td>
+            <td className="py-3 px-4 text-left text-sm font-semibold">COUNTRY</td>
+            <td className="py-3 px-4 text-left text-sm font-semibold">ISSUER</td>
+            <td className="py-3 px-4 text-left text-sm font-semibold">ACTION</td>
+          </tr>
+        </thead>
+
+        <tbody>
+          {paginatedProducts.length === 0 ? (
+            <tr>
+              <td
+                colSpan="11"
+                className="py-3 px-4 text-center text-gray-500"
+              >
+                No Products Available
+              </td>
+            </tr>
+          ) : (
+            paginatedProducts.map((product, index) => (
+              <tr
+                key={index}
+                className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
+              >
+                <td className="py-3 px-4">{product.Type}</td>
+                <td className="py-3 px-4">{product.Brand}</td>
+                <td className="py-3 px-4">{product.Category}</td>
+                <td className="py-3 px-4">{product.CountryName}</td>
+                <td className="py-3 px-4">{product.Issuer}</td>
+                <td className="py-3 px-4">
+                  <Button
+                    size="sm"
+                    className="bg-green-800 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-600 transition-all"
+                    onClick={() => {
+                      setLoadingButtons((prevState) => ({
+                        ...prevState,
+                        [product.BIN]: true,
+                      }));
+
+                      setTimeout(() => {
+                        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+                        const isProductInCart = cart.some(
+                          (item) => item.BIN === product.BIN
+                        );
+
+                        if (isProductInCart) {
+                          toast.warning("This product is already in your cart.");
+                        } else {
+                          const productToAdd = { BIN: product.BIN };
+                          cart.push(productToAdd);
+                          localStorage.setItem("cart", JSON.stringify(cart));
+                          toast.success("Added to cart successfully");
+                        }
+
+                        setLoadingButtons((prevState) => ({
+                          ...prevState,
+                          [product.BIN]: false,
+                        }));
+                      }, 1000);
+                    }}
+                  >
+                    {loadingButtons[product.BIN] ? "Loading..." : "Add to Cart"}
+                  </Button>
                 </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  BRAND
-                </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  CATEGORY
-                </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  COUNTRY
-                </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  ISSUER
-                </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  ACTION
-                </td>
-    
               </tr>
-            </thead>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  )}
 
-            <tbody>
-              {paginatedProducts.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan="11"
-                    className="py-3 px-4 text-center text-gray-500"
-                  >
-                    No Products Available
-                  </td>
-                </tr>
-              ) : (
-                paginatedProducts.map((product, index) => (
-                  <tr
-                    key={index}
-                    className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
-                  >
-                    <td className="py-3 px-4">{product.Type}</td>
-                    <td className="py-3 px-4">{product.Brand}</td>
-                    <td className="py-3 px-4">{product.Category}</td>
-                    <td className="py-3 px-4">{product.CountryName}</td>
-                    <td className="py-3 px-4">{product.Issuer}</td>
-                    <td className="py-3 px-4">
-                    <Button
-  size="sm"
-  className="bg-green-800 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-600 transition-all"
-  onClick={() => {
-    // Set loading state for the clicked button
-    setLoadingButtons((prevState) => ({
-      ...prevState,
-      [product.BIN]: true, // Using BIN for loading state
-    }));
+  {/* Pagination */}
+  <div className="flex justify-between items-center mt-4">
+    <Pagination
+      total={pages}
+      initialPage={page}
+      onChange={(page) => setPage(page)}
+      color="primary"
+    />
+  </div>
+</div>
 
-    // Simulate a 1-second delay
-    setTimeout(() => {
-      // Retrieve the current cart from localStorage (or initialize it as an empty array if it doesn't exist)
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-      // Check if the product (by its BIN) is already in the cart
-      const isProductInCart = cart.some((item) => item.BIN === product.BIN);
-
-      if (isProductInCart) {
-        // Show a message if the product is already in the cart
-        toast.warning("This product is already in your cart.");
-      } else {
-        // Add the product object to the cart if it's not already present
-        const productToAdd = { BIN: product.BIN }; // Create an object with BIN as a key and other product details
-        cart.push(productToAdd);
-
-        // Save the updated cart back to localStorage
-        localStorage.setItem("cart", JSON.stringify(cart));
-
-        // Show success message
-        toast.success("Added to cart successfully");
-      }
-
-      // Hide the loading spinner after the operation
-      setLoadingButtons((prevState) => ({
-        ...prevState,
-        [product.BIN]: false, // Hide loading spinner using BIN
-      }));
-    }, 1000); // 1-second delay
-  }}
->
-  {loadingButtons[product.BIN] ? "Loading..." : "Add to Cart"}
-</Button>
-
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        )}
-
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <Pagination
-            total={pages}
-            initialPage={page}
-            onChange={(page) => setPage(page)}
-            color="primary"
-          />
-        </div>
-      </div>
     </div>
   );
 };

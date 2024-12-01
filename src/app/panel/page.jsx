@@ -38,7 +38,7 @@ const News = () => {
       ) : (
         <div className="space-y-6">
           {newsData.length === 0
-            ? "No News Found Please Add news"
+            ? "No News Found"
             : newsData
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by createdAt in descending order
                 .map((promo) => (
