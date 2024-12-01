@@ -40,16 +40,6 @@ const Layout = ({ children }) => {
       icon: <CreditCard className="w-5 h-5 text-gray-500" />,
     },
     {
-      name: "Dumps No Pin",
-      path: "/panel/dumps-no-pin",
-      icon: <MdOutlineCreditCardOff className="w-5 h-5 text-gray-500" />,
-    },
-    {
-      name: "CVV",
-      path: "/panel/cvv",
-      icon: <CreditCard className="w-5 h-5 text-gray-500" />,
-    },
-    {
       name: "Cart",
       path: "/panel/cart",
       icon: <ShoppingCart className="w-5 h-5 text-gray-500" />,

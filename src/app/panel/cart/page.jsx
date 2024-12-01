@@ -1,54 +1,82 @@
 "use client";
 
-import React from "react";
-import { Button } from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
+import { Button, Spinner } from "@nextui-org/react";
 import { ClipboardPen, ShoppingBasket, TriangleAlert } from "lucide-react";
 import ActionModel from "./actionModel";
+import Papa from "papaparse"; // CSV parsing library
+import { toast } from "react-toastify";
 
 const Cart = () => {
-  // Static product list
-  const products = [
-    {
-      bin: "123456",
-      code: "P001",
-      type: "EBT",
-      subtype: "GOLD",
-      credit: "$500",
-      country: "USA",
-      bank: "XYZ Bank",
-      base: "USD",
-      qty: 10,
-      price: "$50",
-    },
-    {
-      bin: "654321",
-      code: "P002",
-      type: "VISA",
-      subtype: "CLASSIC",
-      credit: "$200",
-      country: "Canada",
-      bank: "ABC Bank",
-      base: "CAD",
-      qty: 15,
-      price: "$50",
-    },
-    // More static products can be added here
-  ];
+  // States to manage the cart products and CSV data
+  const [cart, setCart] = useState([]);
+  const [fileData, setFileData] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Calculate the total price
-  const total = products.reduce(
-    (sum, product) =>
-      sum + parseFloat(product.price.replace("$", "")) * product.qty,
-    0
-  );
+  const COST = 5 ; ////// Static Price 
+
+  // Load cart items from localStorage and CSV on component mount
+  useEffect(() => {
+    const localItems = localStorage.getItem('cart');
+    if (localItems) {
+      setCart(JSON.parse(localItems)); // Parse to an array of products
+    }
+    loadCSV(); // Load CSV data
+
+    setLoading(false)
+
+  }, []);
+
+  // Function to load CSV file data
+  const loadCSV = async () => {
+    try {
+      const response = await fetch("/binlist.csv"); // Assuming CSV is in the public folder
+      const csvText = await response.text();
+
+      // Use PapaParse to parse the CSV
+      Papa.parse(csvText, {
+        complete: (result) => {
+          setFileData(result.data); // Set parsed CSV data into state
+        },
+        header: true, // Assuming CSV has headers
+      });
+    } catch (error) {
+      console.error("Error loading CSV:", error);
+    }
+  };
+
+  // Function to remove product from cart
+  const removeFromCart = (index) => {
+    const updatedProducts = cart.filter((_, i) => i !== index);
+    setCart(updatedProducts);
+    localStorage.setItem('cart', JSON.stringify(updatedProducts)); // Update localStorage
+
+    toast.success("Removed Successfully")
+  };
+
+  // Filter fileData based on cart's BIN values
+  useEffect(() => {
+    if (cart.length > 0 && fileData.length > 0) {
+      // Ensure we are comparing the correct values
+      const filteredProducts = fileData.filter((product) =>
+        cart.some(cartItem => cartItem.BIN === product.BIN) // Matching BIN values
+      );
+      setProducts(filteredProducts);
+
+    }
+  }, [cart, fileData]); // Re-run the filter when cart or fileData changes
+
+  if(loading == true ){
+    return(
+      <div className="w-full justify-center flex">
+        <Spinner color="white" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-
-      {/* Cart Header */}
-      {/* <div className="text-xl font-semibold flex items-center space-x-2">
-        <h1 className="text-gray-200">Shopping Cart</h1>
-      </div> */}
 
       {/* Cart Summary Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -64,20 +92,22 @@ const Cart = () => {
             <div className="text-sm">
               <span className="font-semibold">Items in Cart:</span>
               <ul className="mt-2 space-y-1">
-                {products.map((product, index) => (
-                  <li key={index} className="text-gray-300">
-                    {product.code} - {product.type} {product.subtype}
-                  </li>
-                ))}
+                {products.length === 0 ? (
+                  <li className="text-gray-300">No items in the cart</li>
+                ) : (
+                  products.map((product, index) => (
+                    <li key={index} className="text-gray-300">
+                      {product.Type} - {product.CountryName} Card
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
-
-            {/* <hr className="border border-gray-600" /> */}
 
             {/* Total Price */}
             <div className="flex justify-between text-lg mt-4">
               <span className="font-semibold">Total</span>
-              <span className="font-bold text-xl">${total.toFixed(2)}</span>
+              <span className="font-bold text-xl"> ${products.length * COST } </span>
             </div>
 
             {/* Checkout Button */}
@@ -85,9 +115,9 @@ const Cart = () => {
               <ActionModel
                 size="lg"
                 className=" hover:bg-indigo-500 hover:text-white hover:border-0 w-full border border-indigo-500 bg-transparent focus:outline-indigo-500 text-indigo-500 font-semibold py-3"
-              >
-                Complete Purchase
-              </ActionModel>
+                products={products}
+              />
+                
             </div>
           </div>
         </div>
@@ -100,18 +130,11 @@ const Cart = () => {
           </div>
 
           <div className="mt-6 text-gray-400 space-y-4">
-            {/* <p className="font-semibold text-lg">Important Information:</p> */}
             <ul className="list-disc pl-6 space-y-2">
               <li>All items are non-refundable once purchased.</li>
-              <li>
-                Please double-check your order.
-              </li>
-              <li>
-                Ensure you have reviewed all product details and specifications.
-              </li>
-              <li>
-                If you have any doubts, contact our support team for assistance.
-              </li>
+              <li>Please double-check your order.</li>
+              <li>Ensure you have reviewed all product details and specifications.</li>
+              <li>If you have any doubts, contact our support team for assistance.</li>
             </ul>
           </div>
         </div>
@@ -128,16 +151,11 @@ const Cart = () => {
           {/* Table Headings */}
           <thead>
             <tr className="border-b border-gray-700">
-              <td className="py-3 px-4 text-left font-semibold">BIN</td>
-              <td className="py-3 px-4 text-left font-semibold">CODE</td>
+              <td className="py-3 px-4 text-left font-semibold">INDEX</td>
               <td className="py-3 px-4 text-left font-semibold">TYPE</td>
-              <td className="py-3 px-4 text-left font-semibold">SUBTYPE</td>
-              <td className="py-3 px-4 text-left font-semibold">CREDIT</td>
+              <td className="py-3 px-4 text-left font-semibold">CATEGORY</td>
               <td className="py-3 px-4 text-left font-semibold">COUNTRY</td>
-              <td className="py-3 px-4 text-left font-semibold">BANK</td>
-              <td className="py-3 px-4 text-left font-semibold">BASE</td>
-              <td className="py-3 px-4 text-left font-semibold">QTY</td>
-              <td className="py-3 px-4 text-left font-semibold">PRICE</td>
+           
               <td className="py-3 px-4 text-left font-semibold">ACTION</td>
             </tr>
           </thead>
@@ -146,34 +164,23 @@ const Cart = () => {
           <tbody>
             {products.length === 0 ? (
               <tr>
-                <td
-                  colSpan="11"
-                  className="py-3 px-4 text-center text-gray-500"
-                >
+                <td colSpan="11" className="py-3 px-4 text-center text-gray-500">
                   No Products Available
                 </td>
               </tr>
             ) : (
               products.map((product, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
-                >
-                  <td className="py-3 px-4">{product.bin}</td>
-                  <td className="py-3 px-4">{product.code}</td>
-                  <td className="py-3 px-4">{product.type}</td>
-                  <td className="py-3 px-4">{product.subtype}</td>
-                  <td className="py-3 px-4">{product.credit}</td>
-                  <td className="py-3 px-4">{product.country}</td>
-                  <td className="py-3 px-4">{product.bank}</td>
-                  <td className="py-3 px-4">{product.base}</td>
-                  <td className="py-3 px-4">{product.qty}</td>
-                  <td className="py-3 px-4">{product.price}</td>
+                <tr key={index} className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200">
+                  <td className="py-3 px-4">{index+1} </td>
+                  <td className="py-3 px-4">{product?.Type || "Not Available"}</td>
+                  <td className="py-3 px-4">{product?.Category || "Not Available"}</td>
+                  <td className="py-3 px-4">{product?.CountryName || "Not Available"}</td>
                   <td className="py-3 px-4">
                     <Button
                       color="secondary"
                       size="sm"
                       className="bg-transparent border border-red-500 hover:bg-red-500 hover:text-white text-red-500 font-semibold focus:ring-2 focus:ring-red-600 transition-all"
+                      onClick={() => removeFromCart(index)} // Call remove function
                     >
                       Remove
                     </Button>
@@ -184,7 +191,6 @@ const Cart = () => {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 };

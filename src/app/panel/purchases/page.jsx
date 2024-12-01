@@ -1,85 +1,108 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
-import { Button } from "@nextui-org/react";
-import { Newspaper } from "lucide-react";
+import { BoxIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 const Purchases = () => {
-  // Fixing initial state of products (should be an array)
-  const [products, setProducts] = useState([
-    {
-      purchaseId: "123456",
-      productName: "VISA Gift Card",
-      purchaseDate: "2024-10-15",
-      amount: "100.00 CAD",
-      qty: 2,
-    },
-    {
-      purchaseId: "654321",
-      productName: "Amazon Gift Card",
-      purchaseDate: "2024-10-12",
-      amount: "50.00 USD",
-      qty: 1,
-    },
-    {
-      purchaseId: "654321",
-      productName: "Amazon Gift Card",
-      purchaseDate: "2024-10-12",
-      amount: "50.00 USD",
-      qty: 1,
-    },
-    // Add more purchases as needed
-  ]);
+  const [purchases, setPurchases] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Close dropdown if clicked outside
-  const dropdownRef = useRef(null);
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        // Close dropdown logic if needed
+  const { data: session } = useSession();
+
+  // Fetch purchases data for the given userId
+  const fetchPurchases = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/purchases", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: session.user.id }),
+      });
+
+      const data = await response.json();
+
+      console.log(data.filteredResults, "data");
+
+      setLoading(false);
+
+      if (response.ok) {
+        setPurchases(data.filteredResults); // Assuming 'filteredResults' contains the filtered rows
+      } else {
+        toast.error(data.message || "Error fetching purchases");
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    } catch (error) {
+      setLoading(false);
+      toast.error("Error fetching purchases. Please try again.");
+    }
+  };
+
+  // Fetch purchases on component mount
+  useEffect(() => {
+    if (session) {
+      fetchPurchases();
+    }
+  }, [session]);
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-     
       {/* Table Section */}
       <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
-        
         <div className="text-indigo-500 text-xl mb-4 flex items-center space-x-2">
-          <Newspaper size={24} />
-          <span>My Purchase History</span>
+          <BoxIcon />
+          <span>My Purchases</span>
         </div>
 
-        <table className="min-w-full text-sm text-gray-400">
-          {/* Table Headings */}
-          <thead>
-            <tr className="border-b border-gray-700">
-              <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Purchase ID</td>
-              <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Product Name</td>
-              <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Purchase Date</td>
-              <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Amount</td>
-            </tr>
-          </thead>
+        {/* Loading State */}
+        {loading ? (
+          <div className="text-center py-4 text-gray-400">Loading...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            {/* Apply custom scrollbar styles */}
+            <table className="min-w-full text-sm text-gray-400">
+              {/* Table Headings */}
+              <thead>
+                <tr className="border-b border-gray-700">
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">BIN</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Brand</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Type</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Category</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Issuer</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">IssuerPhone</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">IssuerURL</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">isoCode2</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">isoCode3</td>
+                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Country Name</td>
+                </tr>
+              </thead>
 
-          {/* Table Body */}
-          <tbody>
-            {products.map((product, index) => (
-              <tr
-                key={index}
-                className={`border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200 bg-gray-900 }`}
-              >
-                <td className="py-3 px-6">{product.purchaseId}</td>
-                <td className="py-3 px-6">{product.productName}</td>
-                <td className="py-3 px-6">{product.purchaseDate}</td>
-                <td className="py-3 px-6">{product.amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              {/* Table Body */}
+              <tbody>
+                {purchases.map((purchase, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200 bg-gray-900"
+                  >
+                    <td className="py-3 px-4">{purchase.BIN}</td>
+                    <td className="py-3 px-4">{purchase.Brand}</td>
+                    <td className="py-3 px-4">{purchase.Type}</td>
+                    <td className="py-3 px-4">{purchase.Category}</td>
+                    <td className="py-3 px-4">{purchase.Issuer}</td>
+                    <td className="py-3 px-4">{purchase.IssuerPhone}</td>
+                    <td className="py-3 px-4">{purchase.IssuerUrl}</td>
+                    <td className="py-3 px-4">{purchase.isoCode2}</td>
+                    <td className="py-3 px-4">{purchase.isoCode3}</td>
+                    <td className="py-3 px-4">{purchase.CountryName}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,22 +1,26 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import { Button, Spinner } from "@nextui-org/react";
-import { BoxIcon, ChevronDown, CreditCard, Filter } from "lucide-react";
+import { Button, Pagination, Spinner } from "@nextui-org/react";
+import { BoxIcon, ChevronDown, Filter } from "lucide-react";
+import { toast } from "react-toastify";
+import Papa from "papaparse"; // CSV parsing library
 
 const DumpsWithPin = () => {
   // Fixing initial state of products (should be an array)
   const [products, setProducts] = useState([]);
+  const [finalProducts, setFfinalProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingButtons, setLoadingButtons] = useState(false);
+  const rowsPerPage = 50; // Number of rows per page
+  const [page, setPage] = useState(1); // Current page
+
 
   const [filterItems, setFilterItems] = useState([
-    { label: "Type", key: "type" },
-    { label: "Subtype", key: "subtype" },
-    { label: "Country", key: "country" },
-    { label: "Bank", key: "bank" },
-    { label: "Base", key: "base" },
-    { label: "Code", key: "code" },
-    { label: "Credit", key: "credit" },
+    { label: "Type", key: "Type" },
+    { label: "Brand", key: "." },
+    { label: "Category", key: ".." },
+    { label: "Country", key: "CountryName" },
   ]);
 
   const [filters, setFilters] = useState({
@@ -43,8 +47,48 @@ const DumpsWithPin = () => {
     setDropdownOpen((prev) => (prev === key ? null : key)); // Toggle dropdown open/close
   };
 
-  // Memoize filteredProducts to avoid unnecessary re-renders
-  const filteredProducts = useMemo(() => {
+  // Create a function to get unique options for a filter
+  const getUniqueValues = (key) => {
+    return [...new Set(products.map((product) => product[key] || ""))];
+  };
+
+
+  // load bins
+  const loadCSV = async () => {
+    try {
+      // Assuming your CSV file is hosted or uploaded in a public directory
+      const response = await fetch("/binlist.csv");
+      const csvText = await response.text();
+
+      // Use PapaParse to parse the CSV
+      Papa.parse(csvText, {
+        complete: (result) => {
+          setProducts(result.data); // Set parsed data as products
+          setLoading(false);
+        },
+        header: true, // If your CSV file has headers
+      });
+    } catch (error) {
+      console.error("Error loading CSV:", error);
+      setLoading(false);
+    }
+  };
+
+    // Close dropdown if clicked outside
+    useEffect(() => {
+      loadCSV();
+  
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setDropdownOpen(null);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    
+    const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       return Object.entries(filters).every(([key, value]) => {
         if (!value) return true;
@@ -53,47 +97,18 @@ const DumpsWithPin = () => {
     });
   }, [filters, products]);
 
-  // Create a function to get unique options for a filter
-  const getUniqueValues = (key) => {
-    return [...new Set(products.map((product) => product[key] || ""))];
-  };
-
-  // fetchPins
-  const fetchPins = async () => {
-    try {
-      const response = await fetch("/api/fetchPins/pins");
-      if (!response.ok) {
-        throw new Error("Failed to fetch pins");
-      }
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching pins:", error);
-    } finally {
-      setLoading(false); // Set loading to false once data is fetched
-    }
-  };
-
-  // Close dropdown if clicked outside
-  useEffect(() => {
-    fetchPins();
-
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
+  // Calculate pagination values
+  const pages = Math.ceil(filteredProducts.length / rowsPerPage);
+  const start = (page - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const paginatedProducts = useMemo(
+    () => filteredProducts.slice(start, end),
+    [page, filteredProducts]
+  );
+  
+  
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-      
-      {/* <div className="text-xl font-semibold flex items-center space-x-2">
-        <h1 className="text-gray-200">DUMPS WITH PIN CARDS</h1>
-        <CreditCard className="text-indigo-500" />
-      </div> */}
 
       {/* Filters Section */}
       <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
@@ -167,45 +182,31 @@ const DumpsWithPin = () => {
             {/* Table Headings */}
             <thead>
               <tr className="border-b border-gray-700">
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  BIN
-                </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  CODE
-                </td>
+        
                 <td className="py-3 px-4 text-left text-sm font-semibold">
                   TYPE
                 </td>
                 <td className="py-3 px-4 text-left text-sm font-semibold">
-                  SUBTYPE
+                  BRAND
                 </td>
                 <td className="py-3 px-4 text-left text-sm font-semibold">
-                  CREDIT
+                  CATEGORY
                 </td>
                 <td className="py-3 px-4 text-left text-sm font-semibold">
                   COUNTRY
                 </td>
                 <td className="py-3 px-4 text-left text-sm font-semibold">
-                  BANK
-                </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  BASE
-                </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  QTY
-                </td>
-                <td className="py-3 px-4 text-left text-sm font-semibold">
-                  PRICE
+                  ISSUER
                 </td>
                 <td className="py-3 px-4 text-left text-sm font-semibold">
                   ACTION
                 </td>
+    
               </tr>
             </thead>
 
-            {/* Table Body */}
             <tbody>
-              {filteredProducts.length === 0 ? (
+              {paginatedProducts.length === 0 ? (
                 <tr>
                   <td
                     colSpan="11"
@@ -215,28 +216,61 @@ const DumpsWithPin = () => {
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((product, index) => (
+                paginatedProducts.map((product, index) => (
                   <tr
                     key={index}
                     className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
                   >
-                    <td className="py-3 px-4">{product.bin}</td>
-                    <td className="py-3 px-4">{product.code}</td>
-                    <td className="py-3 px-4">{product.type}</td>
-                    <td className="py-3 px-4">{product.subtype}</td>
-                    <td className="py-3 px-4">{product.credit}</td>
-                    <td className="py-3 px-4">{product.country}</td>
-                    <td className="py-3 px-4">{product.bank}</td>
-                    <td className="py-3 px-4">{product.base}</td>
-                    <td className="py-3 px-4">{product.qty}</td>
-                    <td className="py-3 px-4">{product.price}</td>
+                    <td className="py-3 px-4">{product.Type}</td>
+                    <td className="py-3 px-4">{product.Brand}</td>
+                    <td className="py-3 px-4">{product.Category}</td>
+                    <td className="py-3 px-4">{product.CountryName}</td>
+                    <td className="py-3 px-4">{product.Issuer}</td>
                     <td className="py-3 px-4">
-                      <Button
-                        size="sm"
-                        className="bg-green-800 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-600 transition-all"
-                      >
-                        Buy Now
-                      </Button>
+                    <Button
+  size="sm"
+  className="bg-green-800 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-600 transition-all"
+  onClick={() => {
+    // Set loading state for the clicked button
+    setLoadingButtons((prevState) => ({
+      ...prevState,
+      [product.BIN]: true, // Using BIN for loading state
+    }));
+
+    // Simulate a 1-second delay
+    setTimeout(() => {
+      // Retrieve the current cart from localStorage (or initialize it as an empty array if it doesn't exist)
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      // Check if the product (by its BIN) is already in the cart
+      const isProductInCart = cart.some((item) => item.BIN === product.BIN);
+
+      if (isProductInCart) {
+        // Show a message if the product is already in the cart
+        toast.warning("This product is already in your cart.");
+      } else {
+        // Add the product object to the cart if it's not already present
+        const productToAdd = { BIN: product.BIN }; // Create an object with BIN as a key and other product details
+        cart.push(productToAdd);
+
+        // Save the updated cart back to localStorage
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        // Show success message
+        toast.success("Added to cart successfully");
+      }
+
+      // Hide the loading spinner after the operation
+      setLoadingButtons((prevState) => ({
+        ...prevState,
+        [product.BIN]: false, // Hide loading spinner using BIN
+      }));
+    }, 1000); // 1-second delay
+  }}
+>
+  {loadingButtons[product.BIN] ? "Loading..." : "Add to Cart"}
+</Button>
+
                     </td>
                   </tr>
                 ))
@@ -244,6 +278,16 @@ const DumpsWithPin = () => {
             </tbody>
           </table>
         )}
+
+        {/* Pagination */}
+        <div className="flex justify-between items-center mt-4">
+          <Pagination
+            total={pages}
+            initialPage={page}
+            onChange={(page) => setPage(page)}
+            color="primary"
+          />
+        </div>
       </div>
     </div>
   );

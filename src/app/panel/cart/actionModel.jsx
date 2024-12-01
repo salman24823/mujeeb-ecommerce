@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -7,20 +9,89 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react";
+import { useSession } from "next-auth/react";
+import { toast } from "react-toastify"; // Import the toast module from react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import CSS for react-toastify
 
 // React component
-export default function ActionModal() {
+export default function ActionModal({ products }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const [loading, setLoading] = useState(false); // State to manage loading status
+  const { data: session } = useSession();
+
+  // Cart state to manage local cart data
+  const [cart, setCart] = useState([]);
+
+  // Sync localStorage with cart state
+  useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(savedCart);
+  }, []);
+
+  const completePurchase = async () => {
+    // Check if the cart is empty
+    if (cart.length === 0) {
+      toast.error("Your cart is empty!");
+      return; // Prevent further execution if the cart is empty
+    }
+
+    setLoading(true); // Start loading
+
+    try {
+      const response = await fetch("/api/completePurchase", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: session.user.id, Products: products }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to complete purchase");
+      }
+
+      await fetch("/api/getItems", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: session.user.id, Products: products }),
+      });
+
+      setLoading(false); // Stop loading once response is received
+
+      // Clear the cart in the state and localStorage
+      onOpen(); // Open the success modal
+
+      setCart([]);
+      localStorage.setItem("cart", JSON.stringify([]));
+
+      setTimeout(() => {
+        window.location.reload(); // Reload the page
+      }, 2000);
+
+      // Show success popup
+    } catch (error) {
+      setLoading(false); // Stop loading in case of an error
+
+      // Show error toast if there is an issue
+      toast.error("Error completing purchase. Please try again.");
+    }
+  };
 
   return (
     <>
       <Button
         className="hover:bg-indigo-600 hover:text-white hover:border-0 w-full border border-indigo-500 bg-transparent text-indigo-500 font-semibold py-3 rounded-md focus:outline-none transition-colors duration-300 ease-in-out"
-        onPress={onOpen}
+        onPress={completePurchase}
+        disabled={loading} // Disable the button while loading
       >
-        Complete Purchase
+        {loading ? <Spinner size="sm" color="white" /> : "Complete Purchase"}
       </Button>
+
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -85,7 +156,8 @@ export default function ActionModal() {
                     Your purchase was successfully completed!
                   </p>
                   <p className="text-sm text-gray-600 mt-2">
-                    Thank you for shopping with us. We hope to see you again soon.
+                    Thank you for shopping with us. We hope to see you again
+                    soon.
                   </p>
                 </div>
               </ModalBody>
@@ -94,7 +166,10 @@ export default function ActionModal() {
                 <Button
                   color="gradient"
                   variant="flat"
-                  onPress={onClose}
+                  onPress={() => {
+                    onClose(); // Close the modal
+                    // Optionally, reset the cart state here if needed
+                  }}
                   className="w-full py-3 rounded-md text-white font-semibold transition-colors duration-300 ease-in-out"
                 >
                   Close
