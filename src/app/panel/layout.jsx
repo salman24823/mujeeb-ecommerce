@@ -74,41 +74,43 @@ const Layout = ({ children }) => {
   return (
     <div className="flex bg-gray-900">
       {/* Conditionally render Sidebar */}
-      <aside
-        className={`lg:w-64 w-2/3 h-screen pt-4 border-r max-[770px]:p-0 border-gray-700 bg-gray-900 text-gray-400 transition-all duration-300 ease-in-out transform ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 fixed lg:static top-0 left-0 z-10 lg:z-auto`}
-      >
-        <ul>
-          <li
-            className="hidden w-full p-[0.6rem] border-b border-gray-700 max-[770px]:flex justify-end"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <SidebarCloseIcon className="text-blue-500" />
-          </li>
-          {routes.map((route) => (
-            <li key={route.path}>
-              <Button
-                className="p-0 w-full bg-gray-900 relative cursor-pointer hover:bg-gray-800 transition-all duration-300 ease-in-out text-blue-500"
-                radius="none"
-                onClick={route.onClick} // Attach the onClick handler here
-              >
-                <Link
-                  href={route.path}
-                  className={`text-start block p-3 ${
-                    pathname === route.path
-                      ? "w-full font-semibold text-blue-600 flex gap-3 bg-gray-800 border-r-4 border-blue-500"
-                      : "text-gray-400 flex gap-3 w-full"
-                  }`}
-                >
-                  {route.icon}
-                  {route.name}
-                </Link>
-              </Button>
+      {pathname !== "/panel/change-password" && (
+        <aside
+          className={`lg:w-64 w-2/3 h-screen pt-4 border-r max-[770px]:p-0 border-gray-700 bg-gray-900 text-gray-400 transition-all duration-300 ease-in-out transform ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:translate-x-0 fixed lg:static top-0 left-0 z-10 lg:z-auto`}
+        >
+          <ul>
+            <li
+              className="hidden w-full p-[0.6rem] border-b border-gray-700 max-[770px]:flex justify-end"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <SidebarCloseIcon className="text-blue-500" />
             </li>
-          ))}
-        </ul>
-      </aside>
+            {routes.map((route) => (
+              <li key={route.path}>
+                <Button
+                  className="p-0 w-full bg-gray-900 relative cursor-pointer hover:bg-gray-800 transition-all duration-300 ease-in-out text-blue-500"
+                  radius="none"
+                  onClick={route.onClick} // Attach the onClick handler here
+                >
+                  <Link
+                    href={route.path}
+                    className={`text-start block p-3 ${
+                      pathname === route.path
+                        ? "w-full font-semibold text-blue-600 flex gap-3 bg-gray-800 border-r-4 border-blue-500"
+                        : "text-gray-400 flex gap-3 w-full"
+                    }`}
+                  >
+                    {route.icon}
+                    {route.name}
+                  </Link>
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )}
 
       {/* Main Content Area */}
       <div className="flex-1 h-[92vh] max-[770px]:p-3 overflow-y-scroll w-full p-6 bg-gray-800 relative">

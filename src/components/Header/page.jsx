@@ -102,7 +102,7 @@ const Header = () => {
 
       <div className="gap-3 max-[770px]:w-1/2 px-7 max-[770px]:px-3 flex items-center text-xl font-semibold">
         {/* {Icon && <Icon className="mr-2 text-indigo-600" />} */}
-        <h1 className="text-gray-200 max-[770px]:w-full text-end ">{getTitle()}</h1>
+        <h1 className="text-gray-200 max-[770px]:w-full max-[770px]:text-sm text-end ">{getTitle()}</h1>
       </div>
 
 
