@@ -37,6 +37,8 @@ export async function POST(req) {
         // Parse the response from NowPayments API
         const data = await response.json();
 
+        console.log(data,"data")
+
         if (response.ok) {
             // If the request was successful, return the invoice URL to the frontend
             return NextResponse.json({ invoice: data }, { status: 201 });

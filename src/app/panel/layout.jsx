@@ -72,11 +72,11 @@ const Layout = ({ children }) => {
   ];
 
   return (
-    <div className="flex bg-gray-900">
+    <div className="flex h-screen md:relative pt-[52px] bg-gray-900">
       {/* Conditionally render Sidebar */}
       {pathname !== "/panel/change-password" && (
         <aside
-          className={`lg:w-64 w-2/3 h-screen pt-4 border-r max-[770px]:p-0 border-gray-700 bg-gray-900 text-gray-400 transition-all duration-300 ease-in-out transform ${
+          className={`md:!sticky border-r md:border-0 border-gray-700 md:top-[52px] md:h-fit top-0 h-full lg:w-64 w-2/3 pt-4 max-[770px]:p-0 bg-gray-900 text-gray-400 transition-all duration-300 ease-in-out transform ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           } lg:translate-x-0 fixed lg:static top-0 left-0 z-10 lg:z-auto`}
         >
@@ -113,7 +113,7 @@ const Layout = ({ children }) => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 h-[92vh] max-[770px]:p-3 overflow-y-scroll w-full p-6 bg-gray-800 relative">
+      <div className="border-l overflow-x-hidden border-gray-700 flex-1 max-[420px]-pb-20 max-[770px]:p-3 w-full p-6 bg-gray-800 relative">
         <div key={pathname} style={{ width: "100%" }}>
           {children}
 

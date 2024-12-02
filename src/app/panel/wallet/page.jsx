@@ -118,7 +118,7 @@ const Wallet = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId: session.user.id }),
+        body: JSON.stringify({ userId: session?.user?.id }),
       });
 
       const result = await response.json();
@@ -137,7 +137,7 @@ const Wallet = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: session.user.id }),
+        body: JSON.stringify({ id: session?.user?.id }),
       });
 
       const result = await response.json();
@@ -171,8 +171,8 @@ const Wallet = () => {
               <div className="text-xl font-semibold">Total Balance:</div>
             </div>
 
-            <div className="text-xl font-light text-gray-200">
-              {userDetails?.result.balance || "Loading..."}
+            <div className="text-xl font-light text-green-500">
+              {userDetails?.result?.balance || "Loading..."}
             </div>
           </div>
 
