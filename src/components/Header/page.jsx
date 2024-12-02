@@ -86,7 +86,8 @@ const Header = () => {
   };
 
   return (
-    <div className="bg-gray-900 border-b z-10 h-14 top-0 fixed w-full flex border-gray-700">
+    <div className="bg-gray-900 border-b flex border-gray-700 h-[8vh]">
+
 
       <div className="w-64 max-[770px]:w-1/2 px-2 text-gray-500 gap-2 flex items-center h-full">
         <UserRound
