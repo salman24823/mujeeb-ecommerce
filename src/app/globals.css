@@ -105,6 +105,25 @@
 /* ========== */
 
 /* Custom scrollbar styles */
+div.overflow-y-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #6366f1 #1f2937; /* Indigo color for thumb and gray for track */
+}
+
+/* Webkit-based browsers (Chrome, Safari) */
+div.overflow-y-scroll::-webkit-scrollbar {
+  height: 70vh; /* Height of the horizontal scrollbar */
+}
+
+div.overflow-y-scroll::-webkit-scrollbar-thumb {
+  background-color: #6366f1; /* Indigo thumb color */
+  border-radius: 30px; /* Rounded corners */
+}
+
+div.overflow-y-scroll::-webkit-scrollbar-track {
+  background-color: #1f2937; /* Dark gray track color */
+  border-radius: 30px; /* Rounded corners */
+}
 div.overflow-x-auto {
   scrollbar-width: thin;
   scrollbar-color: #6366f1 #1f2937; /* Indigo color for thumb and gray for track */
@@ -116,7 +135,7 @@ div.overflow-x-auto::-webkit-scrollbar {
 }
 
 div.overflow-x-auto::-webkit-scrollbar-thumb {
-  background-color: #6366f1; /* Indigo thumb color */
+  /* background-color: #6366f1; Indigo thumb color */
   border-radius: 30px; /* Rounded corners */
 }
 

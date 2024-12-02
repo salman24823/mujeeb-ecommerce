@@ -26,11 +26,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="cryptomus" content="b7ff567d" />
+      </head>
       <body
-        className={`overflow-y-hidden ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={` ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionWrapper>
-        <ToastContainer position="top-center" autoClose={5000} />
+          <ToastContainer position="top-center" autoClose={5000} />
           <NextUIProvider>
             <Header />
             {children}

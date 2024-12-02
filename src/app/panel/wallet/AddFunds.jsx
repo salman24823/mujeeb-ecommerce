@@ -31,8 +31,6 @@ const AddFunds = () => {
       setLoading(true);
       const order_id = uuidv4(); // This will generate a unique order ID
 
-      // Generate a unique order_id using UUID
-
       // Validate the amount and ensure the order_id is not already set
       if (!amount || amount < MinAmount) {
         toast.error("Minimum amount is 5$.");
