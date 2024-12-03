@@ -53,7 +53,7 @@ export async function POST(req) {
         console.log(data, "data from now pay")
 
         // If the request was successful, return the invoice URL to the frontend
-        return NextResponse.json({ status: 201 });
+        return NextResponse.json({ data },{ status: 201 });
 
     } catch (error) {
         console.error("Error creating invoice:", error);
