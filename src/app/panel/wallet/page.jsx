@@ -110,24 +110,24 @@ const Wallet = () => {
     },
   };
 
-  async function handleDetails() {
-    if (!session?.user?.id) return;
-    try {
-      const response = await fetch("/api/transactionDetails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: session?.user?.id }),
-      });
+  // async function handleDetails() {
+  //   if (!session?.user?.id) return;
+  //   try {
+  //     const response = await fetch("/api/transactionDetails", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ userId: session?.user?.id }),
+  //     });
 
-      const result = await response.json();
-      console.log(result, "result from the transaction details");
-      setTransactions(result);
-    } catch (error) {
-      console.log(error, "error from fetching the transaction details");
-    }
-  }
+  //     const result = await response.json();
+  //     console.log(result, "result from the transaction details");
+  //     setTransactions(result);
+  //   } catch (error) {
+  //     console.log(error, "error from fetching the transaction details");
+  //   }
+  // }
 
   async function fetchUserDetails() {
     if (!session?.user?.id) return;
@@ -148,8 +148,9 @@ const Wallet = () => {
   }
 
   useEffect(() => {
+
     if (session?.user?.id) {
-      handleDetails();
+      // handleDetails();
       fetchUserDetails();
     }
   }, [session]);
@@ -179,7 +180,7 @@ const Wallet = () => {
           <hr className="border-[1px] border-gray-600" />
 
           {/* payement button */}
-          <AddFunds />
+          <AddFunds userID={session?.user?.id} />
         </div>
 
         <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-lg">

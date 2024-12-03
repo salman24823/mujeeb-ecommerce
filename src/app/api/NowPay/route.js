@@ -1,3 +1,5 @@
+import depositHistory from '@/models/depositHistory';
+import userModel from '@/models/userModel';
 import { NextResponse } from 'next/server';
 
 // Handle POST request
@@ -12,9 +14,11 @@ export async function POST(req) {
         // Parse the request body to get dynamic values
         const requestBody = await req.json();
 
+        console.log(requestBody,"requestBody")
+
         // Ensure that amount and currency are being passed in the request body
-        if (!requestBody.amount || !requestBody.currency) {
-            throw new Error("Amount and currency are required.");
+        if (!requestBody.amount || !requestBody.currency || !requestBody) {
+            console.log(requestBody, "requestBody")
         }
 
         // Make a POST request to NowPayments' invoice endpoint
@@ -37,16 +41,20 @@ export async function POST(req) {
         // Parse the response from NowPayments API
         const data = await response.json();
 
-        console.log(data,"data")
+        const result = await depositHistory.create(
+            {
+                order_id: data.order_id,
+                price_amount: data.price_amount,
+                userID: requestBody.userID
+            }
+        )
 
-        if (response.ok) {
-            // If the request was successful, return the invoice URL to the frontend
-            return NextResponse.json({ invoice: data }, { status: 201 });
-        } else {
-            // If there was an error in the API response, return the error message from the API
-            console.error("NOWPayments API error:", data);
-            return NextResponse.json({ error: data.error || 'Unknown error' }, { status: 500 });
-        }
+        console.log(result, "saved in model result")
+        console.log(data, "data from now pay")
+
+        // If the request was successful, return the invoice URL to the frontend
+        return NextResponse.json({ status: 201 });
+
     } catch (error) {
         console.error("Error creating invoice:", error);
         // Return an appropriate error response

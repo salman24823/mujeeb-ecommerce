@@ -21,26 +21,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-    },
-    // This should be moved to a separate 'purchaseHistory' or 'transactions' array.
-    purchaseHistory: [
-      {
-        products: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product'  // Assuming 'Product' is the name of the model you're referencing
-          }
-        ],
-        billAmount: {
-          type: Number,  // Numeric value for the bill amount
-          required: true
-        },
-        date: {
-          type: Date,
-          default: Date.now  // Default to current date if not provided
-        }
-      }
-    ],
+    }
   },
   { timestamps: true } // Automatically add createdAt and updatedAt
 );

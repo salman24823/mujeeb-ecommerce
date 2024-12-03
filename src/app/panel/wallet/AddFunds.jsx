@@ -2,12 +2,12 @@
 
 import { Button } from "@nextui-org/react";
 import { ChevronDown, CreditCard } from "lucide-react"; // Assuming you want to use ChevronDown for the dropdown icon
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify"; // Assuming you're using react-toastify for notifications
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid"; // Import the UUID library
 
-const AddFunds = () => {
+const AddFunds = ({ userID }) => {
   const [amount, setAmount] = useState(); // Default value for amount
   const [currency, setCurrency] = useState("usd"); // Default currency is "usd"
   const [loading, setLoading] = useState(false); // Default loading state is false
@@ -26,8 +26,8 @@ const AddFunds = () => {
   };
 
   const addFunds = async () => {
-    try {
 
+    try {
       setLoading(true);
       const order_id = uuidv4(); // This will generate a unique order ID
 
@@ -46,11 +46,15 @@ const AddFunds = () => {
         body: JSON.stringify({
           amount,
           currency,
-          order_id, // Pass the dynamically generated order_id to the API
+          order_id,
+          userID
         }),
       });
 
+      console.log("NOW PAY response");
       const response = await result.json();
+
+      console.log(response, "NOW PAY response");
 
       setLoading(false);
 

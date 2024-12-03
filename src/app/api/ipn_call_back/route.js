@@ -1,4 +1,7 @@
 // import crypto from "crypto";
+import depositHistory from "@/models/depositHistory";
+import IPNCALLBACK from "@/models/ipnCallBack";
+import userModel from "@/models/userModel";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -6,33 +9,59 @@ export async function POST(req) {
         // Parse the incoming JSON request body
         const data = await req.json();
 
-        console.log("Incoming IPN Data:", data);
+        console.log("Received IPN Data:", JSON.stringify(data, null, 2));
 
-        // Extract NowPayments signature from headers
-        // const signature = req.headers.get("x-nowpayments-sig");
-
-        // Load IPN secret from environment variables
-        // const secret = process.env.NOWPAYMENTS_IPN_SECRET;
-
-        // Validate the signature
-        // const hash = crypto.createHmac("sha512", secret).update(JSON.stringify(data)).digest("hex");
-
-        // if (hash !== signature) {
-        //   console.error("Invalid signature received.");
-        //   return NextResponse.json({ message: "Invalid signature" }, { status: 403 });
-        // }
-
-        // Log the valid request for manual inspection
-        console.log("Valid IPN received:", data);
+        const saved = await IPNCALLBACK.save(data)
 
         if (data.payment_status == "finished") {
-            console.log(`✅ Payment Finished of amount = 💰 ${data.price_amount}`);
+            console.log(`✅ Payment Finished for Order ID: ${data.order_id}`);
+            console.log(`Amount: 💰 ${data.price_amount}`);
+
+            // Fetch the deposit history record by order_id
+            console.log(`Fetching deposit history for Order ID: ${data.order_id}`);
+            const result = await depositHistory.findOne({ order_id: data.order_id });
+            
+            if (result) {
+                console.log("Deposit history record found:", JSON.stringify(result, null, 2));
+
+                if (result.status == "waiting") {
+                    console.log(`Deposit status is "waiting". Updating it to "finished".`);
+                    result.status = "finished";
+                    result.price_amount = data.pay_amount;
+
+                    // Save the updated deposit history record
+                    await result.save();
+                    console.log(`Deposit history updated for Order ID: ${data.order_id}`);
+
+                    // Fetch the user by user_id
+                    console.log(`Fetching user with ID: ${result.userID}`);
+                    const user = await userModel.findById(result.userID);
+
+                    if (user) {
+                        console.log(`User found: ${JSON.stringify(user, null, 2)}`);
+
+                        const ActualBalance = user.balance;
+                        const updatedBalance = ActualBalance + data.pay_amount;
+
+                        // Update the user's balance
+                        user.balance = updatedBalance;
+                        await user.save();
+                        console.log(`Updated balance for user ID: ${user._id} to: ${updatedBalance}`);
+                    } else {
+                        console.error(`User with ID ${result.userID} not found.`);
+                    }
+                } else {
+                    console.log(`Deposit status for Order ID: ${data.order_id} is not "waiting", no update necessary.`);
+                }
+            } else {
+                console.error(`No deposit history found for Order ID: ${data.order_id}`);
+            }
         } else {
-            console.log(`⏳ Waiting... | Payment is at Waiting of amount = 💰 ${data.price_amount}`);
+            console.log(`⏳ Waiting... | Payment status is ${data.payment_status} for Order ID: ${data.order_id}`);
         }
 
-
         // Respond with success for testing
+        console.log("IPN processed successfully");
         return NextResponse.json(
             { message: "IPN processed successfully for testing" },
             { status: 200 }
