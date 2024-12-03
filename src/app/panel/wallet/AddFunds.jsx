@@ -58,8 +58,8 @@ const AddFunds = ({ userID }) => {
 
       setLoading(false);
 
-      if (response.invoice && response.invoice.invoice_url) {
-        window.location.href = response.invoice.invoice_url;
+      if (response.data && response.data.invoice_url) {
+        window.location.href = response.data.invoice_url;
       } else {
         toast.error(response.message || "Something went wrong");
       }
