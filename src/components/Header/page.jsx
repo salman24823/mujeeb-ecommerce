@@ -87,24 +87,22 @@ const Header = () => {
 
   return (
     <div className="bg-gray-900 border-b z-10 h-14 top-0 fixed w-full flex border-gray-700">
-
       <div className="w-64 max-[770px]:w-1/2 px-2 text-gray-500 gap-2 flex items-center h-full">
-        <UserRound
+        <div
+          className="w-fit flex gap 2"
           onClick={() => location.replace("/panel/wallet")}
-          size={24}
-          className="hover:cursor-pointer text-gray-500"
-        />
-        <p className="text-gray-500">
-          {session?.user?.username || "Loading..."}
-        </p>
+        >
+          <UserRound size={24} className="hover:cursor-pointer text-gray-500" />
+          <p className="text-gray-500">{session?.user?.username || ""}</p>
+        </div>
       </div>
 
       <div className="gap-3 max-[770px]:w-1/2 px-7 max-[770px]:px-3 flex items-center text-xl font-semibold">
         {/* {Icon && <Icon className="mr-2 text-indigo-600" />} */}
-        <h1 className="text-gray-200 max-[770px]:w-full max-[770px]:text-sm text-end ">{getTitle()}</h1>
+        <h1 className="text-gray-200 max-[770px]:w-full max-[770px]:text-sm text-end ">
+          {getTitle()}
+        </h1>
       </div>
-
-
     </div>
   );
 };

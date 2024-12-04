@@ -11,7 +11,7 @@ export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false); // State for toggling confirm password visibility
   const [username, setUsername] = useState(""); // State for username
-  const [email, setEmail] = useState(""); // State for email
+  const [email, setEmail] = useState(); // State for email
   const [password, setPassword] = useState(""); // State for password
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
 
@@ -59,7 +59,7 @@ export default function SignUp() {
   
       if (response.ok) {
         // Handle successful response
-        toast.success("Sign up Success. Redirecting...");
+        toast.success("Sign up Success.");
         router.push("/"); // Navigate to the dashboard
       } else {
         // Handle error response

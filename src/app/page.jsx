@@ -26,8 +26,6 @@ export default function Home() {
     setLoading(true);
 
     try {
-      console.log("Email:", email);
-      console.log("Password:", password);
 
       // Use NextAuth to sign in
       const loginRes = await signIn("credentials", {
@@ -39,7 +37,7 @@ export default function Home() {
       if (loginRes?.error) {
         toast.error("Error in login: Invalid Email or Password");
       } else {
-        toast.success("Login Successful. Redirecting...")
+        toast.success("Login Successful.")
         router.push("/panel/wallet"); // Navigate to dashboard
       }
     } catch (error) {

@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
     balance: {
-      type: Number, // Change to Number instead of String
+      type: String, // Change to Number instead of String
       required: true,
       default: 0,
     },

@@ -19,6 +19,7 @@ import {
   SidebarOpen,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
+import { toast } from "react-toastify";
 
 const Layout = ({ children }) => {
   const { data: session } = useSession();
@@ -63,13 +64,22 @@ const Layout = ({ children }) => {
       path: "/panel/change-password",
       icon: <Lock className="w-5 h-5 text-gray-500" />,
     },
-    {
-      name: "Sign out",
-      path: "/",
-      icon: <LogOut className="w-5 h-5 text-gray-500" />,
-      onClick: () => signOut(),
-    },
   ];
+
+  function logout() {
+    // Call signOut and wait for it to complete
+    signOut({
+      redirect: true, // Ensure redirection after logout
+      callbackUrl: "/", // Redirect to home page or any desired URL after sign out
+    })
+      .then(() => {
+        toast.success("Logout Successful. Redirecting...");
+      })
+      .catch((error) => {
+        toast.error("An error occurred while logging out. Please try again.");
+        console.error("Logout error:", error); // Log error for debugging
+      });
+  }
 
   return (
     <div className="flex h-screen md:relative pt-[52px] bg-gray-900">
@@ -108,6 +118,18 @@ const Layout = ({ children }) => {
                 </Button>
               </li>
             ))}
+            <li>
+              {/* <Link href="/"> */}
+                <Button
+                  className="w-full bg-gray-900 text-gray-400 flex justify-start p-3 font-md relative cursor-pointer hover:bg-gray-800 transition-all duration-300 ease-in-out"
+                  radius="none"
+                  onClick={logout}
+                >
+                  <LogOut className="w-5 h-5 text-gray-500" />
+                  Logout
+                </Button>
+              {/* </Link> */}
+            </li>
           </ul>
         </aside>
       )}
