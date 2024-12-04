@@ -18,6 +18,7 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useSession } from "next-auth/react";
 import AddFunds from "./AddFunds";
+import TransactionHistory from "./transactionHistory";
 
 ChartJS.register(
   BarElement,
@@ -33,39 +34,14 @@ const Wallet = () => {
   const { data: session } = useSession();
   const [userDetails, setUserDetails] = useState();
 
-  const [transactions, setTransactions] = useState([
-    {
-      date: "2024-11-10",
-      type: "Deposit",
-      transactionId: "TXN123456",
-      amount: "+$200.00",
-      orderDetails: "Card-1, Card-2 , Card-3",
-      color: "text-green-500",
-    },
-    {
-      date: "2024-11-09",
-      type: "Purchase",
-      transactionId: "TXN123457",
-      amount: "-$75.00",
-      orderDetails: "Card-4",
-      color: "text-red-500",
-    },
-    {
-      date: "2024-11-08",
-      type: "Deposit",
-      transactionId: "TXN123458",
-      amount: "+$150.00",
-      orderDetails: "Card-5 , Card-6",
-      color: "text-green-500",
-    },
-  ]);
+
 
   const barChartData = {
     labels: ["Day", "Week", "Month", "Year"],
     datasets: [
       {
         label: "Total Transactions",
-        data: [0, 0, 0, 0],
+        data: [10, 20, 1, 50],
         backgroundColor: "rgba(99, 102, 241, 0.6)",
         borderColor: "rgba(99, 102, 241, 1)",
         borderWidth: 1,
@@ -110,24 +86,6 @@ const Wallet = () => {
     },
   };
 
-  // async function handleDetails() {
-  //   if (!session?.user?.id) return;
-  //   try {
-  //     const response = await fetch("/api/transactionDetails", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ userId: session?.user?.id }),
-  //     });
-
-  //     const result = await response.json();
-  //     console.log(result, "result from the transaction details");
-  //     setTransactions(result);
-  //   } catch (error) {
-  //     console.log(error, "error from fetching the transaction details");
-  //   }
-  // }
 
   async function fetchUserDetails() {
     if (!session?.user?.id) return;
@@ -202,56 +160,9 @@ const Wallet = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full text-sm text-gray-400">
-            <thead>
-              <tr className="border-b border-gray-700">
-                <th className="py-3 px-4 text-left whitespace-nowrap">Date</th>
-                <th className="py-3 px-4 text-left whitespace-nowrap">
-                  Transaction
-                </th>
-                <th className="py-3 px-4 text-left whitespace-nowrap">
-                  Transaction ID
-                </th>
-                <th className="py-3 px-4 text-left whitespace-nowrap">
-                  Amount
-                </th>
-                <th className="py-3 px-4 text-left whitespace-nowrap">
-                  Order Details
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan="5"
-                    className="py-3 px-4 text-center text-gray-500"
-                  >
-                    No Transactions Available
-                  </td>
-                </tr>
-              ) : (
-                transactions.map((txn, index) => (
-                  <tr
-                    key={index}
-                    className="border-b border-gray-700 hover:bg-gray-700 transition-colors"
-                  >
-                    <td className="py-3 px-4 whitespace-nowrap">{txn.date}</td>
-                    <td className="py-3 px-4 whitespace-nowrap">{txn.type}</td>
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      {txn.transactionId}
-                    </td>
-                    <td className={`py-3 px-4 ${txn.color} whitespace-nowrap`}>
-                      {txn.amount}
-                    </td>
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      {txn.orderDetails}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+
+          <TransactionHistory />
+
         </div>
       </div>
     </div>

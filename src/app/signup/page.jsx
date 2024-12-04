@@ -5,6 +5,7 @@ import { User, AtSign, Key, Eye, EyeOff } from "lucide-react"; // Added AtSign i
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
@@ -13,10 +14,8 @@ export default function SignUp() {
   const [email, setEmail] = useState(""); // State for email
   const [password, setPassword] = useState(""); // State for password
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
-  const [error, setError] = useState(""); // State for error message
 
   const [loading, setLoading] = useState(false);
-
 
   const router = useRouter();
 
@@ -30,23 +29,23 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     setLoading(true);
-
-
+  
     // Basic form validation
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+      toast.error("Passwords do not match");
+      setLoading(false); // Reset loading here
+      return; // Ensure early exit
     }
-
+  
     // Create the new user object
     const newUser = {
       username,
       email,
       password,
     };
-
+  
     try {
       const response = await fetch("/api/register", {
         method: "POST",
@@ -55,25 +54,26 @@ export default function SignUp() {
         },
         body: JSON.stringify(newUser),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         // Handle successful response
-        toast.success("Sign up Success. Redirecting...")
-        router.push("/"); // Navigate to dashboard
-
+        toast.success("Sign up Success. Redirecting...");
+        router.push("/"); // Navigate to the dashboard
       } else {
         // Handle error response
-        setError(data.message || "Something went wrong");
+        toast.error("Sign up Failed.");
       }
-      
     } catch (error) {
-      setError("An error occurred while creating the user");
-    }finally {
+      // Handle network or unexpected errors
+      toast.error("An error occurred while creating the user");
+    } finally {
+      // Ensure loading is reset regardless of the outcome
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="p-5 h-screen gap-12 w-full bg-gradient-to-r from-gray-900 via-gray-950 to-gray-900 flex flex-col items-center justify-center">
@@ -145,11 +145,6 @@ export default function SignUp() {
             {confirmPasswordVisible ? <EyeOff /> : <Eye />}
           </button>
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <p className="text-red-500 text-sm text-center mb-4">{error}</p>
-        )}
 
         {/* Sign Up Button */}
         <Button

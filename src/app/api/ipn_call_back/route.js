@@ -9,9 +9,13 @@ export async function POST(req) {
         // Parse the incoming JSON request body
         const data = await req.json();
 
+        const funds = data.pay_amount
+
+        console.log(funds,"funds")
+
         console.log("Received IPN Data:", JSON.stringify(data, null, 2));
 
-        const saved = await IPNCALLBACK.save(data)
+        // const saved = await IPNCALLBACK.save(data)
 
         if (data.payment_status == "finished") {
             console.log(`✅ Payment Finished for Order ID: ${data.order_id}`);
@@ -27,7 +31,7 @@ export async function POST(req) {
                 if (result.status == "waiting") {
                     console.log(`Deposit status is "waiting". Updating it to "finished".`);
                     result.status = "finished";
-                    result.price_amount = data.pay_amount;
+                    result.price_amount = funds;
 
                     // Save the updated deposit history record
                     await result.save();
@@ -35,13 +39,18 @@ export async function POST(req) {
 
                     // Fetch the user by user_id
                     console.log(`Fetching user with ID: ${result.userID}`);
+                    console.log(result,"result")
                     const user = await userModel.findById(result.userID);
 
                     if (user) {
-                        console.log(`User found: ${JSON.stringify(user, null, 2)}`);
+                        // console.log(`User found: ${JSON.stringify(user, null, 2)}`);
+
+                        console.log(user,"user")
 
                         const ActualBalance = user.balance;
-                        const updatedBalance = ActualBalance + data.pay_amount;
+                        console.log(ActualBalance,"ActualBalance")
+                        const updatedBalance = ActualBalance + Number(funds);
+                        console.log(updatedBalance,"updatedBalance")
 
                         // Update the user's balance
                         user.balance = updatedBalance;
