@@ -15,7 +15,6 @@ const DumpsWithPin = () => {
   const rowsPerPage = 50; // Number of rows per page
   const [page, setPage] = useState(1); // Current page
 
-
   const [filterItems, setFilterItems] = useState([
     { label: "Type", key: "Type" },
     { label: "Brand", key: "." },
@@ -52,7 +51,6 @@ const DumpsWithPin = () => {
     return [...new Set(products.map((product) => product[key] || ""))];
   };
 
-
   // load bins
   const loadCSV = async () => {
     try {
@@ -74,21 +72,20 @@ const DumpsWithPin = () => {
     }
   };
 
-    // Close dropdown if clicked outside
-    useEffect(() => {
-      loadCSV();
-  
-      const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-          setDropdownOpen(null);
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    loadCSV();
 
-    
-    const filteredProducts = useMemo(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       return Object.entries(filters).every(([key, value]) => {
         if (!value) return true;
@@ -105,11 +102,9 @@ const DumpsWithPin = () => {
     () => filteredProducts.slice(start, end),
     [page, filteredProducts]
   );
-  
-  
+
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-
       {/* Filters Section */}
       <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
         <div className="text-indigo-500 text-lg mb-6 flex items-center space-x-2">
@@ -164,105 +159,124 @@ const DumpsWithPin = () => {
 
       {/* Table Section */}
       <div className="bg-gray-900 border margin_div border-slate-700 p-6 rounded-lg shadow-xl">
-  <div className="text-indigo-500 text-lg mb-4 flex items-center space-x-2">
-    <BoxIcon size={24} />
-    <span>Dumps with Pin</span>
-  </div>
+        <div className="text-indigo-500 text-lg mb-4 flex items-center space-x-2">
+          <BoxIcon size={24} />
+          <span>Dumps with Pin</span>
+        </div>
 
-  {loading ? (
-    <div className="w-full flex justify-center h-20 items-center">
-      <Spinner className="w-fit" color="white" />
-    </div>
-  ) : (
-    <div className="overflow-x-auto">
-      <table className="min-w-full text-sm text-gray-400">
-        {/* Table Headings */}
-        <thead>
-          <tr className="border-b border-gray-700">
-            <td className="py-3 px-4 text-left text-sm font-semibold">TYPE</td>
-            <td className="py-3 px-4 text-left text-sm font-semibold">BRAND</td>
-            <td className="py-3 px-4 text-left text-sm font-semibold">CATEGORY</td>
-            <td className="py-3 px-4 text-left text-sm font-semibold">COUNTRY</td>
-            <td className="py-3 px-4 text-left text-sm font-semibold">ISSUER</td>
-            <td className="py-3 px-4 text-left text-sm font-semibold">ACTION</td>
-          </tr>
-        </thead>
+        {loading ? (
+          <div className="w-full flex justify-center h-20 items-center">
+            <Spinner className="w-fit" color="white" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-gray-400">
+              {/* Table Headings */}
+              <thead>
+                <tr className="border-b border-gray-700">
+                  <td className="py-3 px-4 text-left text-sm font-semibold">
+                    TYPE
+                  </td>
+                  <td className="py-3 px-4 text-left text-sm font-semibold">
+                    BRAND
+                  </td>
+                  <td className="py-3 px-4 text-left text-sm font-semibold">
+                    CATEGORY
+                  </td>
+                  <td className="py-3 px-4 text-left text-sm font-semibold">
+                    COUNTRY
+                  </td>
+                  <td className="py-3 px-4 text-left text-sm font-semibold">
+                    ISSUER
+                  </td>
+                  <td className="py-3 px-4 text-left text-sm font-semibold">
+                    ACTION
+                  </td>
+                </tr>
+              </thead>
 
-        <tbody>
-          {paginatedProducts.length === 0 ? (
-            <tr>
-              <td
-                colSpan="11"
-                className="py-3 px-4 text-center text-gray-500"
-              >
-                No Products Available
-              </td>
-            </tr>
-          ) : (
-            paginatedProducts.map((product, index) => (
-              <tr
-                key={index}
-                className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
-              >
-                <td className="py-3 px-4">{product.Type}</td>
-                <td className="py-3 px-4">{product.Brand}</td>
-                <td className="py-3 px-4">{product.Category}</td>
-                <td className="py-3 px-4">{product.CountryName}</td>
-                <td className="py-3 px-4">{product.Issuer}</td>
-                <td className="py-3 px-4">
-                  <Button
-                    size="sm"
-                    className="bg-green-800 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-600 transition-all"
-                    onClick={() => {
-                      setLoadingButtons((prevState) => ({
-                        ...prevState,
-                        [product.BIN]: true,
-                      }));
+              <tbody>
+                {paginatedProducts.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="11"
+                      className="py-3 px-4 text-center text-gray-500"
+                    >
+                      No Products Available
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedProducts.map((product, index) => (
+                    <tr
+                      key={index}
+                      className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
+                    >
+                      <td className="py-3 px-4">{product.Type}</td>
+                      <td className="py-3 px-4">{product.Brand}</td>
+                      <td className="py-3 px-4">{product.Category}</td>
+                      <td className="py-3 px-4">{product.CountryName}</td>
+                      <td className="py-3 px-4">{product.Issuer}</td>
+                      <td className="py-3 px-4">
+                        <Button
+                          size="sm"
+                          className="bg-green-800 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-600 transition-all"
+                          onClick={() => {
+                            setLoadingButtons((prevState) => ({
+                              ...prevState,
+                              [product.BIN]: true,
+                            }));
 
-                      setTimeout(() => {
-                        const cart = JSON.parse(localStorage.getItem("cart")) || [];
-                        const isProductInCart = cart.some(
-                          (item) => item.BIN === product.BIN
-                        );
+                            setTimeout(() => {
+                              const cart =
+                                JSON.parse(localStorage.getItem("cart")) || [];
+                              const isProductInCart = cart.some(
+                                (item) => item.BIN === product.BIN
+                              );
 
-                        if (isProductInCart) {
-                          toast.warning("This product is already in your cart.");
-                        } else {
-                          const productToAdd = { BIN: product.BIN };
-                          cart.push(productToAdd);
-                          localStorage.setItem("cart", JSON.stringify(cart));
-                          toast.success("Added to cart successfully");
-                        }
+                              if (isProductInCart) {
+                                toast.warning(
+                                  "This product is already in your cart."
+                                );
+                              } else {
+                                const productToAdd = { BIN: product.BIN };
+                                cart.push(productToAdd);
+                                localStorage.setItem(
+                                  "cart",
+                                  JSON.stringify(cart)
+                                );
+                                toast.success("Added to cart successfully");
+                              }
 
-                        setLoadingButtons((prevState) => ({
-                          ...prevState,
-                          [product.BIN]: false,
-                        }));
-                      }, 1000);
-                    }}
-                  >
-                    {loadingButtons[product.BIN] ? "Loading..." : "Add to Cart"}
-                  </Button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  )}
+                              setLoadingButtons((prevState) => ({
+                                ...prevState,
+                                [product.BIN]: false,
+                              }));
+                            }, 1000);
+                          }}
+                        >
+                          {loadingButtons[product.BIN]
+                            ? "Loading..."
+                            : "Add to Cart"}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-  {/* Pagination */}
-  <div className="flex justify-between items-center mt-4">
-    <Pagination
-      total={pages}
-      initialPage={page}
-      onChange={(page) => setPage(page)}
-      color="primary"
-    />
-  </div>
-</div>
-
+        {/* Pagination */}
+        <div className="flex justify-between items-center mt-4">
+          <Pagination
+            total={pages}
+            initialPage={page}
+            onChange={(page) => setPage(page)}
+            color="primary"
+          />
+        </div>
+      </div>
     </div>
   );
 };

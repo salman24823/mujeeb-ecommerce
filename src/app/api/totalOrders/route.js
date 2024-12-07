@@ -1,5 +1,5 @@
 import dbConnection from "@/config/connectDB";
-import userModel from "@/models/userModel";
+import ProductModel from "@/models/ProductsModels";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -8,7 +8,7 @@ export async function GET() {
         // Make a request to the external API
         await dbConnection()
 
-        const result = await userModel.find()
+        const result = await ProductModel.find()
 
         console.log("users" , result)
 
