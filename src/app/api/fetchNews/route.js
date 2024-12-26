@@ -5,6 +5,8 @@ export async function GET() {
     // Make a request to the external API
     const response = await fetch('https://admin-panel-two-beige.vercel.app/api/handleNews');
 
+    console.log(response,"news")
+
     // If the external API request failed, return an error response
     if (!response.ok) {
       return NextResponse.json({ error: 'Failed to fetch news' }, { status: 500 });

@@ -13,6 +13,8 @@ export async function POST(req) {
 
         console.log(funds,"funds")
 
+        console.log(data,"data")
+
         console.log("Received IPN Data:", JSON.stringify(data, null, 2));
 
         // const saved = await IPNCALLBACK.save(data)

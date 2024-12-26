@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button } from "@nextui-org/react";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Bar } from "react-chartjs-2";
-import { CreditCard, User, DollarSign } from "lucide-react";
+import { User, DollarSign } from "lucide-react";
 
 import {
   Chart as ChartJS,
@@ -155,6 +154,7 @@ const Wallet = () => {
             <Bar data={barChartData} options={barChartOptions} />
           </div>
         </div>
+        
       </div>
 
       <div className="margin_div bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-lg">
