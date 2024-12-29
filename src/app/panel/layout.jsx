@@ -17,6 +17,7 @@ import {
   ClipboardEditIcon,
   SidebarCloseIcon,
   SidebarOpen,
+  ShoppingBasket,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "react-toastify";
@@ -43,6 +44,21 @@ const Layout = ({ children }) => {
       name: "Dumps With Pin",
       path: "/panel/dumps-with-pin",
       icon: <CreditCard className="w-5 h-5 text-gray-500" />,
+    },
+    {
+      name: "Dumps No Pin",
+      path: "/panel/dumps-no-pin",
+      icon: <CreditCard className="w-5 h-5 text-gray-500" />,
+    },
+    {
+      name: "CVV",
+      path: "/panel/CVV",
+      icon: <CreditCard className="w-5 h-5 text-gray-500" />,
+    },
+    {
+      name: "Pre Order",
+      path: "/panel/pre-order",
+      icon: <ShoppingBasket className="w-5 h-5 text-gray-500" />,
     },
     {
       name: "Cart",
