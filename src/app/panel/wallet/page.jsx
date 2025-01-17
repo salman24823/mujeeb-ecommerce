@@ -192,8 +192,6 @@ const Wallet = () => {
   return (
     <div className="w-full bg-gray-800 text-white rounded-lg shadow-xl space-y-8">
 
-      <Button onclick={console.log(transactionsGraph,"transactionsGraph")} > Console </Button>
-
       <div className="grid grid-cols-1 md:grid-cols-2 max-[770px]:gap-2 gap-8">
         <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-lg space-y-6">
           <div className="flex items-center space-x-3">
