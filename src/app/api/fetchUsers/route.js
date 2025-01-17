@@ -15,7 +15,8 @@ export async function GET() {
     // Return the data with no-cache headers to ensure fresh data
     return NextResponse.json(result, {
       headers: {
-        "Cache-Control": "no-store, max-age=0", // Prevent caching
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+
       },
     });
 
@@ -27,7 +28,7 @@ export async function GET() {
       {
         status: 500,
         headers: {
-          "Cache-Control": "no-store, max-age=0", // Prevent caching for errors too
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
         },
       }
     );
