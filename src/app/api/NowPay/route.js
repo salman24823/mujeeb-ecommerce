@@ -1,5 +1,4 @@
 import depositHistory from '@/models/depositHistory';
-import userModel from '@/models/userModel';
 import { NextResponse } from 'next/server';
 
 // Handle POST request
