@@ -2,6 +2,8 @@ import dbConnection from "@/config/connectDB";
 import userModel from "@/models/userModel";
 import { NextResponse } from "next/server";
 
+export const revalidate = 0;
+
 export async function GET() {
   try {
     // Establish database connection
@@ -16,7 +18,6 @@ export async function GET() {
     return NextResponse.json(result, {
       headers: {
         "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-
       },
     });
 
