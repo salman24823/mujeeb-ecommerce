@@ -1,9 +1,8 @@
-// authOptions.js
-
 import database from "@/config/connectDB";
 import User from "@/models/userModel";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 
 export const authOptions = NextAuth({
   providers: [
@@ -20,28 +19,27 @@ export const authOptions = NextAuth({
           const user = await User.findOne({ email });
 
           if (!user) {
-            // User not found, return null
-            return null;
+            return null; // User not found
           }
 
-          // Plaintext password comparison (no hashing in this case)
-          if (user.password === password) {
-            // If passwords match, return user
-            return user;
-          } else {
-            // Passwords don't match, return null
-            return null;
+          // Compare hashed password with provided password
+          const isMatch = await bcrypt.compare(password, user.password);
+
+          if (!isMatch) {
+            return null; // Invalid password
           }
+
+          return user; // Authentication successful
 
         } catch (error) {
           console.error("Error during authentication:", error);
-          return null; // In case of error, return null
+          return null; // Return null on error
         }
       },
     }),
   ],
   session: {
-    strategy: "jwt", // Use JWT session strategy
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET,
@@ -58,7 +56,7 @@ export const authOptions = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id; 
+      session.user.id = token.id;
       session.user.username = token.username;
       session.user.email = token.email;
       return session;

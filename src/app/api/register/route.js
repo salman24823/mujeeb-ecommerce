@@ -1,10 +1,10 @@
 import dbConnection from "@/config/connectDB";
 import users from "@/models/userModel";
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 
 export async function POST(req) {
-
-    await dbConnection()
+    await dbConnection();
 
     try {
         const data = await req.json(); // Parse the incoming JSON data
@@ -18,17 +18,23 @@ export async function POST(req) {
             );
         }
 
-        // Save the news to the database (mocked here)
-        const result = await users({
-            username: username,
-            email: email,
-            password: password,
+        // Hash the password using bcrypt
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Save the user to the database
+        const newUser = new users({
+            username,
+            email,
+            password: hashedPassword, // Store the hashed password
         });
 
-        // save in the mongo db
-        await result.save();
+        await newUser.save();
 
-        return new NextResponse(JSON.stringify({message : "Success"}), { status: 201 });
+        return new NextResponse(
+            JSON.stringify({ message: "Success" }),
+            { status: 201 }
+        );
 
     } catch (error) {
         console.error("Error adding user request:", error);
