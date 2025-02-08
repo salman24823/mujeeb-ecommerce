@@ -2,7 +2,9 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>dumps-no-pin</div>
+    <div>
+      <h1 className='text-white'>Coming Soon</h1>
+    </div>
   )
 }
 
