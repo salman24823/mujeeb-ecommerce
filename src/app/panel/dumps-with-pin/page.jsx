@@ -1,166 +1,130 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
-import { Button, Pagination, Spinner } from "@nextui-org/react";
-import { BoxIcon, ChevronDown, Filter } from "lucide-react";
-import { toast } from "react-toastify";
-import Papa from "papaparse"; // CSV parsing library
+import { Spinner } from "@nextui-org/react";
+import React, { useState, useEffect, useCallback } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DumpsWithPin = () => {
-  // Fixing initial state of products (should be an array)
   const [products, setProducts] = useState([]);
-  const [finalProducts, setFfinalProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingButtons, setLoadingButtons] = useState(false);
-  const rowsPerPage = 50; // Number of rows per page
-  const [page, setPage] = useState(1); // Current page
-
-  const [filterItems, setFilterItems] = useState([
-    { label: "Type", key: "Type" },
-    { label: "Brand", key: "." },
-    { label: "Category", key: ".." },
-    { label: "Country", key: "CountryName" },
-  ]);
-
-  const [filters, setFilters] = useState({
-    type: null,
-    subtype: null,
-    country: null,
-    bank: null,
-    base: null,
-    code: null,
-    credit: null,
+  const [cart, setCart] = useState(() => {
+    // Get cart data from localStorage on initial load
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  const [dropdownOpen, setDropdownOpen] = useState(null); // Tracks which filter's dropdown is open
-  const dropdownRef = useRef(null); // To detect clicks outside the dropdown
+  const [selectedQuantities, setSelectedQuantities] = useState({});
+  const [addingToCart, setAddingToCart] = useState({}); // Track loading state for each product
 
-  const handleFilterChange = (filter, value) => {
-    setFilters((prev) => ({
+  const loadCSV = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/dumpsWithPins");
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error loading CSV:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadCSV();
+  }, [loadCSV]);
+
+  // Handle quantity change for each product
+  const handleQuantityChange = (e, productId, stock) => {
+    let quantity = e.target.value;
+
+    // Ensure the quantity does not exceed stock
+    if (quantity > stock) {
+      quantity = stock; // Set to stock if the quantity exceeds it
+      toast.error(`Cannot add more than ${stock} items to the cart.`);
+    }
+
+    setSelectedQuantities((prev) => ({
       ...prev,
-      [filter]: value,
+      [productId]: quantity,
     }));
   };
 
-  const handleDropdownToggle = (key) => {
-    setDropdownOpen((prev) => (prev === key ? null : key)); // Toggle dropdown open/close
-  };
+  const addToCart = async (product) => {
+    const quantity = selectedQuantities[product.bin] || 1; // Default to 1 if no quantity is selected
 
-  // Create a function to get unique options for a filter
-  const getUniqueValues = (key) => {
-    return [...new Set(products.map((product) => product[key] || ""))];
-  };
-
-  // load bins
-  const loadCSV = async () => {
-    try {
-      // Assuming your CSV file is hosted or uploaded in a public directory
-      const response = await fetch("/binlist.csv");
-      const csvText = await response.text();
-
-      // Use PapaParse to parse the CSV
-      Papa.parse(csvText, {
-        complete: (result) => {
-          setProducts(result.data); // Set parsed data as products
-          setLoading(false);
-        },
-        header: true, // If your CSV file has headers
-      });
-    } catch (error) {
-      console.error("Error loading CSV:", error);
-      setLoading(false);
+    // Ensure the quantity does not exceed stock
+    if (quantity > product.quantity) {
+      toast.error(`You cannot add more than the stock available of this product.`);
+      return; // Exit early if quantity exceeds stock
     }
-  };
 
-  // Close dropdown if clicked outside
-  useEffect(() => {
-    loadCSV();
+    // Calculate the total quantity in the cart for this product
+    const existingProduct = cart.find((item) => item.bin === product.bin);
+    const totalQuantityInCart = existingProduct ? existingProduct.quantity : 0;
 
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    // Check if the quantity in cart plus the selected quantity exceeds the stock
+    if (totalQuantityInCart + quantity > product.quantity) {
+      toast.error(`You cannot add more than ${product.quantity} of this product to the cart.`);
+      return; // Exit early if adding the quantity exceeds the stock
+    }
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      return Object.entries(filters).every(([key, value]) => {
-        if (!value) return true;
-        return product[key]?.toLowerCase().includes(value.toLowerCase());
-      });
+    // Set the loading state for this product to true
+    setAddingToCart((prev) => ({
+      ...prev,
+      [product.bin]: true,
+    }));
+
+    // Wait for 1 second before updating the cart to show the loading spinner
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Check if the product already exists in the cart
+    const existingProductIndex = cart.findIndex((item) => item.bin === product.bin);
+
+    let newCart;
+    if (existingProductIndex !== -1) {
+      // Product is already in the cart, update the quantity
+      newCart = [...cart];
+      newCart[existingProductIndex].quantity += quantity;
+    } else {
+      // Product is not in the cart, add new item with BIN, Type, Country, and Quantity
+      newCart = [
+        ...cart,
+        { bin: product.bin, cardType: product.cardType, country: product.country, quantity },
+      ];
+    }
+
+    // Update the cart in the state and localStorage
+    setCart(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
+
+    // Show success toast
+    toast.success(`${product.cardType || "Product"} added to cart!`, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      draggable: true,
+      progress: undefined,
     });
-  }, [filters, products]);
 
-  // Calculate pagination values
-  const pages = Math.ceil(filteredProducts.length / rowsPerPage);
-  const start = (page - 1) * rowsPerPage;
-  const end = start + rowsPerPage;
-  const paginatedProducts = useMemo(
-    () => filteredProducts.slice(start, end),
-    [page, filteredProducts]
-  );
+    // Set the loading state for this product to false
+    setAddingToCart((prev) => ({
+      ...prev,
+      [product.bin]: false,
+    }));
+  };
+  
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-      {/* Filters Section */}
-      <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
-        <div className="text-indigo-500 text-lg mb-6 flex items-center space-x-2">
-          <Filter size={24} />
-          <span>Select the Filters</span>
-        </div>
-
-        <div className="grid grid-cols-4 max-[770px]:grid-cols-1 gap-2">
-          {filterItems.map(({ label, key }) => (
-            <div key={key} className="relative">
-              <Button
-                onClick={() => handleDropdownToggle(key)}
-                className="w-full justify-between rounded-md px-6 py-3 bg-gray-800 text-gray-200 hover:bg-gray-700 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
-              >
-                {/* Show the selected filter value or the label */}
-                {filters[key] ? filters[key] : label}
-                <ChevronDown
-                  className={`ml-2 w-5 text-gray-300 transition-transform duration-300 ${
-                    dropdownOpen === key ? "rotate-180" : ""
-                  }`}
-                />
-              </Button>
-
-              {dropdownOpen === key && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute mt-2  left-0 w-52 p-1 overflow-hidden bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-10 transform transition-all duration-300 ease-out"
-                >
-                  <div>
-                    {getUniqueValues(key).map((value) => (
-                      <Button
-                        key={value}
-                        onClick={() => handleFilterChange(key, value)}
-                        className="w-full bg-gray-800 flex justify-start text-gray-300 hover:text-gray-200 hover:bg-gray-600 rounded-md px-4 py-2 cursor-pointer transition-all focus:outline-0"
-                      >
-                        {value || "None"}
-                      </Button>
-                    ))}
-                    <Button
-                      onClick={() => handleFilterChange(key, null)}
-                      className="w-full text-red-500 p-1 rounded-md flex justify-start bg-gray-800 hover:text-gray-300 hover:bg-gray-700 px-4 py-2 cursor-pointer transition-all"
-                    >
-                      Clear Filter
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Toast Notification */}
+      <ToastContainer />
 
       {/* Table Section */}
-      <div className="bg-gray-900 border margin_div border-slate-700 p-6 rounded-lg shadow-xl">
+      <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
         <div className="text-indigo-500 text-lg mb-4 flex items-center space-x-2">
-          <BoxIcon size={24} />
           <span>Dumps with Pin</span>
         </div>
 
@@ -169,95 +133,56 @@ const DumpsWithPin = () => {
             <Spinner className="w-fit" color="white" />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-scroll text-nowrap custom-scrollbar">
             <table className="min-w-full text-sm text-gray-400">
-              {/* Table Headings */}
               <thead>
                 <tr className="border-b border-gray-700">
-                  <td className="py-3 px-4 text-left text-sm font-semibold">
-                    TYPE
-                  </td>
-                  <td className="py-3 px-4 text-left text-sm font-semibold">
-                    BRAND
-                  </td>
-                  <td className="py-3 px-4 text-left text-sm font-semibold">
-                    CATEGORY
-                  </td>
-                  <td className="py-3 px-4 text-left text-sm font-semibold">
-                    COUNTRY
-                  </td>
-                  <td className="py-3 px-4 text-left text-sm font-semibold">
-                    ISSUER
-                  </td>
-                  <td className="py-3 px-4 text-left text-sm font-semibold">
-                    ACTION
-                  </td>
+                  <th className="py-3 px-4 text-left">BIN</th>
+                  <th className="py-3 px-4 text-left">Type</th>
+                  <th className="py-3 px-4 text-left">Issuer</th>
+                  <th className="py-3 px-4 text-left">Country</th>
+                  <th className="py-3 px-4 text-left">Stock</th>
+                  <th className="py-3 px-4 text-left">Quantity</th>
+                  <th className="py-3 px-4 text-left">Action</th>
                 </tr>
               </thead>
-
               <tbody>
-                {paginatedProducts.length === 0 ? (
+                {products.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan="11"
-                      className="py-3 px-4 text-center text-gray-500"
-                    >
+                    <td colSpan="10" className="py-3 px-4 text-center text-gray-500">
                       No Products Available
                     </td>
                   </tr>
                 ) : (
-                  paginatedProducts.map((product, index) => (
-                    <tr
-                      key={index}
-                      className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
-                    >
-                      <td className="py-3 px-4">{product.Type}</td>
-                      <td className="py-3 px-4">{product.Brand}</td>
-                      <td className="py-3 px-4">{product.Category}</td>
-                      <td className="py-3 px-4">{product.CountryName}</td>
-                      <td className="py-3 px-4">{product.Issuer}</td>
+                  products.data.map((product) => (
+                    <tr key={product.bin} className="border-b border-gray-700 hover:bg-gray-800">
+                      <td className="py-3 px-4">{product.bin || "-"}</td>
+                      <td className="py-3 px-4">{product.cardType || "-"}</td>
+                      <td className="py-3 px-4">{product.issuer || "-"}</td>
+                      <td className="py-3 px-4">{product.country || "-"}</td>
+                      <td className="py-3 px-4">{product.quantity || "-"}</td>
                       <td className="py-3 px-4">
-                        <Button
-                          size="sm"
-                          className="bg-green-800 hover:bg-green-600 text-white focus:ring-2 focus:ring-green-600 transition-all"
-                          onClick={() => {
-                            setLoadingButtons((prevState) => ({
-                              ...prevState,
-                              [product.BIN]: true,
-                            }));
-
-                            setTimeout(() => {
-                              const cart =
-                                JSON.parse(localStorage.getItem("cart")) || [];
-                              const isProductInCart = cart.some(
-                                (item) => item.BIN === product.BIN
-                              );
-
-                              if (isProductInCart) {
-                                toast.warning(
-                                  "This product is already in your cart."
-                                );
-                              } else {
-                                const productToAdd = { BIN: product.BIN };
-                                cart.push(productToAdd);
-                                localStorage.setItem(
-                                  "cart",
-                                  JSON.stringify(cart)
-                                );
-                                toast.success("Added to cart successfully");
-                              }
-
-                              setLoadingButtons((prevState) => ({
-                                ...prevState,
-                                [product.BIN]: false,
-                              }));
-                            }, 1000);
-                          }}
+                        <input
+                          type="number"
+                          min="1"
+                          max={product.quantity} // Prevent input higher than available stock
+                          value={selectedQuantities[product.bin] || 1}
+                          onChange={(e) => handleQuantityChange(e, product.bin, product.quantity)}
+                          className="w-16 p-1 rounded-md"
+                        />
+                      </td>
+                      <td className="py-3 px-4">
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="bg-indigo-500 text-white py-1 px-4 rounded-md hover:bg-indigo-600"
+                          disabled={addingToCart[product.bin]} // Disable button for the specific product
                         >
-                          {loadingButtons[product.BIN]
-                            ? "Loading..."
-                            : "Add to Cart"}
-                        </Button>
+                          {addingToCart[product.bin] ? (
+                            <Spinner size="sm" color="white" />
+                          ) : (
+                            "Add to Cart"
+                          )}
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -266,16 +191,6 @@ const DumpsWithPin = () => {
             </table>
           </div>
         )}
-
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <Pagination
-            total={pages}
-            initialPage={page}
-            onChange={(page) => setPage(page)}
-            color="primary"
-          />
-        </div>
       </div>
     </div>
   );
