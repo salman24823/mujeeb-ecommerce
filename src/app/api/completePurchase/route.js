@@ -38,6 +38,8 @@ export async function POST(req) {
       );
     }
 
+    console.log(id, Products , "id and product")
+
     // get order from db
     const response = await fetch("https://admin-panel-two-beige.vercel.app/api/client/orders", {
       method: "POST",
@@ -47,14 +49,16 @@ export async function POST(req) {
       body: JSON.stringify({ id, Products }),
     });
 
-    const isCompleted = await response.json();
-
-    if (!isCompleted.ok) {
+    if (!response.ok) {
       return new NextResponse(
         JSON.stringify({ message: "Error in completePurchase" }),
         { status: 500 }
       );
     }
+
+    const isCompleted = await response.json();
+    console.log(isCompleted,"isCompleted")
+
 
     // Deduct the bill amount from the user's balance
     const updatedBalance = Balance - Bill;
