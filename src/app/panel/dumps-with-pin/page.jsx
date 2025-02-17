@@ -91,7 +91,7 @@ const DumpsWithPin = () => {
       // Product is not in the cart, add new item with BIN, Type, Country, and Quantity
       newCart = [
         ...cart,
-        { bin: product.bin, cardType: product.cardType, country: product.country, quantity },
+        { bin: product.bin, cardType: product.cardType, country: product.country, quantity , price  },
       ];
     }
 
@@ -141,6 +141,7 @@ const DumpsWithPin = () => {
                   <th className="py-3 px-4 text-left">Country</th>
                   <th className="py-3 px-4 text-left">Stock</th>
                   <th className="py-3 px-4 text-left">Quantity</th>
+                  <th className="py-3 px-4 text-left">Price</th>
                   <th className="py-3 px-4 text-left">Action</th>
                 </tr>
               </thead>
@@ -159,6 +160,7 @@ const DumpsWithPin = () => {
                       <td className="py-3 px-4">{product.issuer || "-"}</td>
                       <td className="py-3 px-4">{product.country || "-"}</td>
                       <td className="py-3 px-4">{product.quantity || "-"}</td>
+                      <td className="py-3 px-4">{product.price || "-"}</td>
                       <td className="py-3 px-4">
                         <input
                           type="number"

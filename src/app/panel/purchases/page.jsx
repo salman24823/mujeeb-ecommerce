@@ -62,7 +62,7 @@ const Purchases = () => {
           <div className="text-center py-4 text-gray-400">Loading...</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-gray-400">
+            <table className="min-w-full text-nowrap overflow-x-scroll text-sm text-gray-400">
               {/* Table Headings */}
               <thead>
                 <tr className="border-b border-gray-700">
