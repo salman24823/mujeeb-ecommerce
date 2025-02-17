@@ -46,14 +46,6 @@ export default function ActionModal({ cart , setCart }) {
         throw new Error("Failed to complete purchase");
       }
 
-      // await fetch("/api/getItems", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ id: session.user.id, Products: cart }),
-      // });
-
       setLoading(false); // Stop loading once response is received
 
       // Clear the cart in the state and localStorage

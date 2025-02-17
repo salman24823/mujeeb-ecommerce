@@ -21,17 +21,17 @@ const Purchases = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId: session.user.id }),
+        body: JSON.stringify({ userId: session?.user?.id }),
       });
 
       const data = await response.json();
 
-      console.log(data.filteredResults, "data");
+      console.log(data.orders, "data from API");
 
       setLoading(false);
 
       if (response.ok) {
-        setPurchases(data.filteredResults); // Assuming 'filteredResults' contains the filtered rows
+        setPurchases(data.orders);
       } else {
         toast.error(data.message || "Error fetching purchases");
       }
@@ -62,43 +62,57 @@ const Purchases = () => {
           <div className="text-center py-4 text-gray-400">Loading...</div>
         ) : (
           <div className="overflow-x-auto">
-            {/* Apply custom scrollbar styles */}
             <table className="min-w-full text-sm text-gray-400">
               {/* Table Headings */}
               <thead>
                 <tr className="border-b border-gray-700">
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">BIN</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Brand</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Type</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Category</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Issuer</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">IssuerPhone</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">IssuerURL</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">isoCode2</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">isoCode3</td>
-                  <td className="py-3 px-6 text-left text-sm font-semibold text-gray-300">Country Name</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">BIN</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Card Type</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer Phone</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer URL</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Country</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Card Number</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Expiry</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Code</td>
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">PIN</td>
                 </tr>
               </thead>
 
               {/* Table Body */}
               <tbody>
-                {purchases.map((purchase, index) => (
-                  <tr
-                    key={index}
-                    className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200 bg-gray-900"
-                  >
-                    <td className="py-3 px-4">{purchase.BIN}</td>
-                    <td className="py-3 px-4">{purchase.Brand}</td>
-                    <td className="py-3 px-4">{purchase.Type}</td>
-                    <td className="py-3 px-4">{purchase.Category}</td>
-                    <td className="py-3 px-4">{purchase.Issuer}</td>
-                    <td className="py-3 px-4">{purchase.IssuerPhone}</td>
-                    <td className="py-3 px-4">{purchase.IssuerUrl}</td>
-                    <td className="py-3 px-4">{purchase.isoCode2}</td>
-                    <td className="py-3 px-4">{purchase.isoCode3}</td>
-                    <td className="py-3 px-4">{purchase.CountryName}</td>
-                  </tr>
-                ))}
+                {purchases.map((purchase) =>
+                  purchase.products.map((product) => (
+                    <tr
+                      key={product._id}
+                      className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200 bg-gray-900"
+                    >
+                      <td className="py-3 px-4">{product.bin}</td>
+                      <td className="py-3 px-4">{product.cardType}</td>
+                      <td className="py-3 px-4">{product.issuer}</td>
+                      <td className="py-3 px-4">{product.issuerPhone}</td>
+                      <td className="py-3 px-4">
+                        {product.issuerUrl !== "Unknown" ? (
+                          <a
+                            href={product.issuerUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-400 hover:underline"
+                          >
+                            {product.issuerUrl}
+                          </a>
+                        ) : (
+                          "N/A"
+                        )}
+                      </td>
+                      <td className="py-3 px-4">{product.country}</td>
+                      <td className="py-3 px-4">{product.cardNumber}</td>
+                      <td className="py-3 px-4">{product.expiry}</td>
+                      <td className="py-3 px-4">{product.code}</td>
+                      <td className="py-3 px-4">{product.pin}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
