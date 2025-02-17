@@ -136,14 +136,14 @@ const Layout = ({ children }) => {
             ))}
             <li>
               {/* <Link href="/"> */}
-                <Button
-                  className="w-full bg-gray-900 text-gray-400 flex justify-start p-3 font-md relative cursor-pointer hover:bg-gray-800 transition-all duration-300 ease-in-out"
-                  radius="none"
-                  onClick={logout}
-                >
-                  <LogOut className="w-5 h-5 text-gray-500" />
-                  Logout
-                </Button>
+              <Button
+                className="w-full bg-gray-900 text-gray-400 flex justify-start p-3 font-md relative cursor-pointer hover:bg-gray-800 transition-all duration-300 ease-in-out"
+                radius="none"
+                onClick={logout}
+              >
+                <LogOut className="w-5 h-5 text-gray-500" />
+                Logout
+              </Button>
               {/* </Link> */}
             </li>
           </ul>
@@ -163,6 +163,7 @@ const Layout = ({ children }) => {
           </button>
         </div>
       </div>
+  
     </div>
   );
 };

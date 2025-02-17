@@ -16,20 +16,13 @@ import { toast } from "react-toastify"; // Import the toast module from react-to
 import "react-toastify/dist/ReactToastify.css"; // Import CSS for react-toastify
 
 // React component
-export default function ActionModal({ products }) {
+export default function ActionModal({ cart , setCart }) {
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const [loading, setLoading] = useState(false); // State to manage loading status
   const { data: session } = useSession();
 
-  // Cart state to manage local cart data
-  const [cart, setCart] = useState([]);
-
-  // Sync localStorage with cart state
-  useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(savedCart);
-  }, []);
 
   const completePurchase = async () => {
     // Check if the cart is empty
@@ -46,20 +39,20 @@ export default function ActionModal({ products }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: session.user.id, Products: products }),
+        body: JSON.stringify({ id: session.user.id, Products: cart }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to complete purchase");
       }
 
-      await fetch("/api/getItems", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: session.user.id, Products: products }),
-      });
+      // await fetch("/api/getItems", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ id: session.user.id, Products: cart }),
+      // });
 
       setLoading(false); // Stop loading once response is received
 
@@ -67,6 +60,7 @@ export default function ActionModal({ products }) {
       onOpen(); // Open the success modal
 
       setCart([]);
+
       localStorage.setItem("cart", JSON.stringify([]));
 
       setTimeout(() => {

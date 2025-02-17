@@ -119,8 +119,6 @@ const DumpsWithPin = () => {
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-      {/* Toast Notification */}
-      <ToastContainer />
 
       {/* Table Section */}
       <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
@@ -168,7 +166,7 @@ const DumpsWithPin = () => {
                           max={product.quantity} // Prevent input higher than available stock
                           value={selectedQuantities[product.bin] || 1}
                           onChange={(e) => handleQuantityChange(e, product.bin, product.quantity)}
-                          className="w-16 p-1 rounded-md"
+                          className="w-16 bg-gray-700 text-gray-300 p-1 rounded-md"
                         />
                       </td>
                       <td className="py-3 px-4">

@@ -4,74 +4,40 @@ import React, { useEffect, useState } from "react";
 import { Button, Spinner } from "@nextui-org/react";
 import { ClipboardPen, ShoppingBasket, TriangleAlert } from "lucide-react";
 import ActionModel from "./actionModel";
-import Papa from "papaparse"; // CSV parsing library
 import { toast } from "react-toastify";
+import ActionModal from "./actionModel";
 
 const Cart = () => {
-  // States to manage the cart products and CSV data
   const [cart, setCart] = useState([]);
-  const [fileData, setFileData] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Loading state
 
-  const COST = 5; ////// Static Price
+  const COST = 5; // Static Price
 
-  // Load cart items from localStorage and CSV on component mount
-  useEffect(() => {
+  // Load cart items from localStorage
+  function getCart() {
+    setLoading(true);
     const localItems = localStorage.getItem("cart");
     if (localItems) {
-      setCart(JSON.parse(localItems)); // Parse to an array of products
+      setCart(JSON.parse(localItems));
+    } else {
+      setCart([]);
     }
-    loadCSV(); // Load CSV data
-
     setLoading(false);
+  }
+
+  useEffect(() => {
+    getCart();
   }, []);
 
-  // Function to load CSV file data
-  const loadCSV = async () => {
-    try {
-      const response = await fetch("/binlist.csv"); // Assuming CSV is in the public folder
-      const csvText = await response.text();
-
-      // Use PapaParse to parse the CSV
-      Papa.parse(csvText, {
-        complete: (result) => {
-          setFileData(result.data); // Set parsed CSV data into state
-        },
-        header: true, // Assuming CSV has headers
-      });
-    } catch (error) {
-      console.error("Error loading CSV:", error);
-    }
-  };
-
-  // Function to remove product from cart
+  // Remove product from cart
   const removeFromCart = (index) => {
+    setLoading(true);
     const updatedProducts = cart.filter((_, i) => i !== index);
     setCart(updatedProducts);
-    localStorage.setItem("cart", JSON.stringify(updatedProducts)); // Update localStorage
-
+    localStorage.setItem("cart", JSON.stringify(updatedProducts));
     toast.success("Removed Successfully");
+    setLoading(false);
   };
-
-  // Filter fileData based on cart's BIN values
-  useEffect(() => {
-    if (cart.length > 0 && fileData.length > 0) {
-      // Ensure we are comparing the correct values
-      const filteredProducts = fileData.filter(
-        (product) => cart.some((cartItem) => cartItem.BIN === product.BIN) // Matching BIN values
-      );
-      setProducts(filteredProducts);
-    }
-  }, [cart, fileData]); // Re-run the filter when cart or fileData changes
-
-  if (loading == true) {
-    return (
-      <div className="w-full justify-center flex">
-        <Spinner color="white" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
@@ -83,42 +49,37 @@ const Cart = () => {
             <ClipboardPen size={24} />
             <span>Cart Summary</span>
           </div>
-
           <div className="mt-6 space-y-4">
             {/* Item Names */}
             <div className="text-sm">
               <span className="font-semibold">Items in Cart:</span>
               <ul className="mt-2 space-y-1">
-                {products.length === 0 ? (
-                  <li className="text-gray-300">No items in the cart</li>
+                {loading ? (
+                  <li className="text-gray-300">Loading...</li>
+                ) : cart.length === 0 ? (
+                  <li className="text-gray-300">No items in cart</li>
                 ) : (
-                  products.map((product, index) => (
+                  cart.map((value, index) => (
                     <li key={index} className="text-gray-300">
-                      {product.Type} - {product.CountryName} Card
+                      Cards with bin{" "}
+                      <span className="text-green-500"> {value.bin} </span> ={" "}
+                      {value.quantity}
                     </li>
                   ))
                 )}
               </ul>
             </div>
 
+            <hr className="border-dashed border-gray-500" />
+
             {/* Total Price */}
             <div className="flex justify-between text-lg mt-4">
               <span className="font-semibold">Total</span>
-              <span className="font-bold text-xl">
-                {" "}
-                ${products.length * COST}{" "}
-              </span>
-            </div>
-
-            {/* Checkout Button */}
-            <div className="mt-6 text-center">
-              <ActionModel
-                size="lg"
-                className=" hover:bg-indigo-500 hover:text-white hover:border-0 w-full border border-indigo-500 bg-transparent focus:outline-indigo-500 text-indigo-500 font-semibold py-3"
-                products={products}
-              />
+              <span className="font-bold text-xl"> ${cart.length * COST} </span>
             </div>
           </div>
+
+          <ActionModal cart={cart} setCart={setCart} />
         </div>
 
         {/* Important Note */}
@@ -159,53 +120,70 @@ const Cart = () => {
                   INDEX
                 </td>
                 <td className="py-3 px-4 text-left font-semibold whitespace-nowrap">
-                  TYPE
+                  BIN
                 </td>
                 <td className="py-3 px-4 text-left font-semibold whitespace-nowrap">
-                  CATEGORY
+                  TYPE
                 </td>
                 <td className="py-3 px-4 text-left font-semibold whitespace-nowrap">
                   COUNTRY
                 </td>
                 <td className="py-3 px-4 text-left font-semibold whitespace-nowrap">
-                  ACTION
+                  Quantity
+                </td>
+                <td className="py-3 px-4 text-left font-semibold whitespace-nowrap">
+                  Action
                 </td>
               </tr>
             </thead>
 
             {/* Table Body */}
             <tbody>
-              {products.length === 0 ? (
+              {loading ? (
                 <tr>
                   <td
-                    colSpan="11"
-                    className="py-3 px-4 text-center max-[770px]:text-start text-gray-500"
+                    colSpan="6"
+                    className="py-3 px-4 text-center text-gray-500"
                   >
-                    No Products Available
+                    <span className="flex items-center justify-center gap-3">
+                      <Spinner size="sm" /> <span> Laoding... </span>
+                    </span>
+                  </td>
+                </tr>
+              ) : cart.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="py-3 px-4 text-center text-gray-500"
+                  >
+                    No items in cart
                   </td>
                 </tr>
               ) : (
-                products.map((product, index) => (
+                cart.map((product, index) => (
                   <tr
                     key={index}
                     className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200"
                   >
                     <td className="py-3 px-4 whitespace-nowrap">{index + 1}</td>
                     <td className="py-3 px-4 whitespace-nowrap">
-                      {product?.Type || "Not Available"}
+                      {product?.bin || "Not Available"}
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap">
-                      {product?.Category || "Not Available"}
+                      {product?.cardType || "Not Available"}
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap">
-                      {product?.CountryName || "Not Available"}
+                      {product?.country || "Not Available"}
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      {product?.quantity || "Not Available"}
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap">
                       <Button
                         color="secondary"
                         size="sm"
                         className="bg-transparent border border-red-500 hover:bg-red-500 hover:text-white text-red-500 font-semibold focus:ring-2 focus:ring-red-600 transition-all"
-                        onClick={() => removeFromCart(index)} // Call remove function
+                        onClick={() => removeFromCart(index)}
                       >
                         Remove
                       </Button>
@@ -216,8 +194,6 @@ const Cart = () => {
             </tbody>
           </table>
         </div>
-
-        
       </div>
     </div>
   );
