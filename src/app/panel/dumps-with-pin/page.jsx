@@ -8,11 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 const DumpsWithPin = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState(() => {
-    // Get cart data from localStorage on initial load
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+
+  const [cart, setCart] = useState([]);
 
   const [selectedQuantities, setSelectedQuantities] = useState({});
   const [addingToCart, setAddingToCart] = useState({}); // Track loading state for each product
@@ -33,6 +30,11 @@ const DumpsWithPin = () => {
 
   useEffect(() => {
     loadCSV();
+
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
   }, [loadCSV]);
 
   // Handle quantity change for each product
@@ -56,7 +58,9 @@ const DumpsWithPin = () => {
 
     // Ensure the quantity does not exceed stock
     if (quantity > product.quantity) {
-      toast.error(`You cannot add more than the stock available of this product.`);
+      toast.error(
+        `You cannot add more than the stock available of this product.`
+      );
       return; // Exit early if quantity exceeds stock
     }
 
@@ -66,7 +70,9 @@ const DumpsWithPin = () => {
 
     // Check if the quantity in cart plus the selected quantity exceeds the stock
     if (totalQuantityInCart + quantity > product.quantity) {
-      toast.error(`You cannot add more than ${product.quantity} of this product to the cart.`);
+      toast.error(
+        `You cannot add more than ${product.quantity} of this product to the cart.`
+      );
       return; // Exit early if adding the quantity exceeds the stock
     }
 
@@ -80,7 +86,9 @@ const DumpsWithPin = () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Check if the product already exists in the cart
-    const existingProductIndex = cart.findIndex((item) => item.bin === product.bin);
+    const existingProductIndex = cart.findIndex(
+      (item) => item.bin === product.bin
+    );
 
     let newCart;
     if (existingProductIndex !== -1) {
@@ -91,7 +99,13 @@ const DumpsWithPin = () => {
       // Product is not in the cart, add new item with BIN, Type, Country, and Quantity
       newCart = [
         ...cart,
-        { bin: product.bin, cardType: product.cardType, country: product.country, quantity , price  },
+        {
+          bin: product.bin,
+          cardType: product.cardType,
+          country: product.country,
+          quantity,
+          price : product.price,
+        },
       ];
     }
 
@@ -115,11 +129,9 @@ const DumpsWithPin = () => {
       [product.bin]: false,
     }));
   };
-  
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-
       {/* Table Section */}
       <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
         <div className="text-indigo-500 text-lg mb-4 flex items-center space-x-2">
@@ -148,29 +160,41 @@ const DumpsWithPin = () => {
               <tbody>
                 {products.length === 0 ? (
                   <tr>
-                    <td colSpan="10" className="py-3 px-4 text-center text-gray-500">
+                    <td
+                      colSpan="10"
+                      className="py-3 px-4 text-center text-gray-500"
+                    >
                       No Products Available
                     </td>
                   </tr>
                 ) : (
                   products.data.map((product) => (
-                    <tr key={product.bin} className="border-b border-gray-700 hover:bg-gray-800">
+                    <tr
+                      key={product.bin}
+                      className="border-b border-gray-700 hover:bg-gray-800"
+                    >
                       <td className="py-3 px-4">{product.bin || "-"}</td>
                       <td className="py-3 px-4">{product.cardType || "-"}</td>
                       <td className="py-3 px-4">{product.issuer || "-"}</td>
                       <td className="py-3 px-4">{product.country || "-"}</td>
                       <td className="py-3 px-4">{product.quantity || "-"}</td>
-                      <td className="py-3 px-4">{product.price || "-"}</td>
                       <td className="py-3 px-4">
                         <input
                           type="number"
                           min="1"
                           max={product.quantity} // Prevent input higher than available stock
                           value={selectedQuantities[product.bin] || 1}
-                          onChange={(e) => handleQuantityChange(e, product.bin, product.quantity)}
+                          onChange={(e) =>
+                            handleQuantityChange(
+                              e,
+                              product.bin,
+                              product.quantity
+                            )
+                          }
                           className="w-16 bg-gray-700 text-gray-300 p-1 rounded-md"
                         />
                       </td>
+                      <td className="py-3 px-4">$ {product.price || "-"}</td>
                       <td className="py-3 px-4">
                         <button
                           onClick={() => addToCart(product)}
