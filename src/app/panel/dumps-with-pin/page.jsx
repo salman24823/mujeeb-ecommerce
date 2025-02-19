@@ -129,6 +129,7 @@ const DumpsWithPin = () => {
             <table className="min-w-full text-sm text-gray-400">
               <thead>
                 <tr className="border-b border-gray-700">
+                  <th className="py-3 px-4 text-left">#</th>
                   <th className="py-3 px-4 text-left">BIN (Stock)</th>
                   <th className="py-3 px-4 text-left">Type</th>
                   <th className="py-3 px-4 text-left">Issuer</th>
@@ -150,11 +151,12 @@ const DumpsWithPin = () => {
                     </td>
                   </tr>
                 ) : (
-                  products.data.map((product) => (
+                  products.data.map((product , index) => (
                     <tr
                       key={product.bin}
                       className="border-b border-gray-700 hover:bg-gray-800"
                     >
+                      <td className="py-3 px-4">{index + 1 || "-"}</td>
                       <td className="py-3 px-4">{product.bin || "-"}</td>
                       <td className="py-3 px-4">{product.cardType || "-"}</td>
                       <td className="py-3 px-4">{product.issuer || "-"}</td>
