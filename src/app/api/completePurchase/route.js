@@ -45,28 +45,28 @@ export async function POST(req) {
     console.log(id, Products, "id and product");
 
     // **Use POST instead of GET for order processing**
-    const response = await fetch(
-      "https://admin-panel-two-beige.vercel.app/api/client/orders",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id, Products }),
-      }
-    );
+    // const response = await fetch(
+    //   "https://admin-panel-two-beige.vercel.app/api/client/orders",
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ id, Products }),
+    //   }
+    // );
 
-    // Ensure the API response is valid
-    if (!response.ok) {
-      console.log("Error from complete order admin API");
-      return NextResponse.json(
-        { message: "Error in completeOrder" },
-        { status: 500 }
-      );
-    }
+    // // Ensure the API response is valid
+    // if (!response.ok) {
+    //   console.log("Error from complete order admin API");
+    //   return NextResponse.json(
+    //     { message: "Error in completeOrder" },
+    //     { status: 500 }
+    //   );
+    // }
 
-    const responseData = await response.json();
-    console.log(responseData);
+    // const responseData = await response.json();
+    // console.log(responseData);
 
     // Deduct the bill amount from the user's balance
     result.balance -= Bill;
