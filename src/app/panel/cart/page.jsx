@@ -11,8 +11,6 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true); // Loading state
 
-  const COST = 5; // Static Price
-
   // Load cart items from localStorage
   function getCart() {
     setLoading(true);
@@ -75,7 +73,16 @@ const Cart = () => {
             {/* Total Price */}
             <div className="flex justify-between text-lg mt-4">
               <span className="font-semibold">Total</span>
-              <span className="font-bold text-xl"> ${cart.length * COST} </span>
+              <span className="font-bold text-xl">
+                $
+                {cart
+                  .reduce(
+                    (total, item) =>
+                      total + item.quantity * parseFloat(item.price),
+                    0
+                  )
+                  .toFixed(2)}
+              </span>
             </div>
           </div>
 

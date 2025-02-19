@@ -7,28 +7,30 @@ export async function POST(req) {
 
   try {
     const data = await req.json(); // Parse the incoming JSON data
-
     const { id, Products } = data;
 
     // Validate the incoming data
-    if (!id || !Products) {
+    if (!id || !Array.isArray(Products) || Products.length === 0) {
       return NextResponse.json(
-        { message: "Missing required fields." },
+        { message: "Missing or invalid required fields." },
         { status: 400 }
       );
     }
 
     // Find the user in the database
     const result = await userModel.findById(id);
-
     if (!result) {
       return NextResponse.json({ message: "User not found." }, { status: 404 });
     }
 
     const Balance = result.balance; // Access balance as a number
 
-    // Calculate the total bill for the purchase (assuming each product costs 5)
-    const Bill = Products.length * 5;
+    // Corrected Bill Calculation
+    const Bill = Products.reduce((total, product) => {
+      return total + product.quantity * parseFloat(product.price);
+    }, 0);
+
+    console.log(Bill, "Total Bill");
 
     // Check if the user has sufficient balance
     if (Balance < Bill) {
@@ -38,9 +40,9 @@ export async function POST(req) {
       );
     }
 
-    console.log(id, Products , "id and product")
+    console.log(id, Products, "id and product");
 
-    // get order from db
+    // Send the order to the order API
     const response = await fetch("https://admin-panel-two-beige.vercel.app/api/client/orders", {
       method: "POST",
       headers: {
@@ -57,14 +59,10 @@ export async function POST(req) {
     }
 
     const isCompleted = await response.json();
-    console.log(isCompleted,"isCompleted")
-
+    console.log(isCompleted, "isCompleted");
 
     // Deduct the bill amount from the user's balance
-    const updatedBalance = Balance - Bill;
-
-    // Update the user's balance in the database
-    result.balance = updatedBalance;
+    result.balance -= Bill;
 
     // Save the updated user data to the database
     await result.save();
