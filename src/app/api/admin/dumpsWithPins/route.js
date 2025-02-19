@@ -7,7 +7,7 @@ export async function GET(req) {
 
     console.log("Fetch Start")
     
-    const response = await fetch("http://localhost:3001/api/client/dumpsPin") 
+    const response = await fetch("https://admin-panel-two-beige.vercel.app/api/client/dumpsPin") 
 
     const data = await response.json()
 

@@ -43,7 +43,7 @@ export async function POST(req) {
     console.log(id, Products, "id and product");
 
     // Send the order to the order API
-    const response = await fetch("http://localhost:3001/api/client/orders", {
+    const response = await fetch("https://admin-panel-two-beige.vercel.app/api/client/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
