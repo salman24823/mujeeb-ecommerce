@@ -2,7 +2,7 @@ import dbConnection from "@/config/connectDB";
 import userModel from "@/models/userModel";
 import { NextResponse } from "next/server";
 
-export const revalidate = 0 ;
+export const revalidate = 0;
 
 export async function POST(req) {
   await dbConnection();
@@ -27,7 +27,7 @@ export async function POST(req) {
 
     const Balance = result.balance; // Access balance as a number
 
-    // Corrected Bill Calculation
+    // Calculate total bill
     const Bill = Products.reduce((total, product) => {
       return total + product.quantity * parseFloat(product.price);
     }, 0);
@@ -36,32 +36,37 @@ export async function POST(req) {
 
     // Check if the user has sufficient balance
     if (Balance < Bill) {
-      return new NextResponse(
-        JSON.stringify({ message: "Insufficient balance" }),
+      return NextResponse.json(
+        { message: "Insufficient balance" },
         { status: 400 }
       );
     }
 
     console.log(id, Products, "id and product");
 
-    // Send the order to the order API
-    const response = await fetch("https://admin-panel-two-beige.vercel.app/api/client/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id, Products }),
-    });
+    // **Use POST instead of GET for order processing**
+    const response = await fetch(
+      "https://admin-panel-two-beige.vercel.app/api/client/orders",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, Products }),
+      }
+    );
 
+    // Ensure the API response is valid
     if (!response.ok) {
-      return new NextResponse(
-        JSON.stringify({ message: "Error in completePurchase" }),
+      console.log("Error from complete order admin API");
+      return NextResponse.json(
+        { message: "Error in completeOrder" },
         { status: 500 }
       );
     }
 
-    const isCompleted = await response.json();
-    console.log(isCompleted, "isCompleted");
+    const responseData = await response.json();
+    console.log(responseData);
 
     // Deduct the bill amount from the user's balance
     result.balance -= Bill;
@@ -69,11 +74,10 @@ export async function POST(req) {
     // Save the updated user data to the database
     await result.save();
 
-    return new NextResponse(
-      JSON.stringify({ message: "Purchase successful" }),
+    return NextResponse.json(
+      { message: "Purchase successful", data: responseData },
       { status: 200 }
     );
-
   } catch (error) {
     console.error("Error in Purchasing:", error);
     return NextResponse.json(
