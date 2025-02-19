@@ -8,12 +8,11 @@ import "react-toastify/dist/ReactToastify.css";
 const DumpsWithPin = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [cart, setCart] = useState([]);
-
   const [selectedQuantities, setSelectedQuantities] = useState({});
-  const [addingToCart, setAddingToCart] = useState({}); // Track loading state for each product
+  const [addingToCart, setAddingToCart] = useState({});
 
+  // Load CSV Data
   const loadCSV = useCallback(async () => {
     setLoading(true);
     try {
@@ -37,102 +36,85 @@ const DumpsWithPin = () => {
     }
   }, [loadCSV]);
 
-  // Handle quantity change for each product
-  const handleQuantityChange = (e, productId, stock) => {
-    let quantity = e.target.value;
+  // Handle quantity change
+  const handleQuantityChange = (e, bin, stock) => {
+    let purchaseQuantity = parseInt(e.target.value, 10) || 1;
 
-    // Ensure the quantity does not exceed stock
-    if (quantity > stock) {
-      quantity = stock; // Set to stock if the quantity exceeds it
-      toast.error(`Cannot add more than ${stock} items to the cart.`);
+    // Get the existing quantity of this bin in the cart
+    const existingProduct = cart.find((item) => item.bin === bin);
+    const totalQuantityInCart = existingProduct ? existingProduct.quantity : 0;
+
+    if (purchaseQuantity > stock - totalQuantityInCart) {
+      toast.error(`You cannot add more than ${stock} of this product in total.`);
+      return;
     }
+    
 
     setSelectedQuantities((prev) => ({
       ...prev,
-      [productId]: quantity,
+      [bin]: Math.max(purchaseQuantity, 1), // Ensure it's at least 1
     }));
+
+    console.log(`Stock Available for ${bin}: ${stock}`);
+    console.log(`User Selected Quantity for ${bin}: ${purchaseQuantity}`);
   };
 
   const addToCart = async (product) => {
-    const quantity = selectedQuantities[product.bin] || 1; // Default to 1 if no quantity is selected
+    const { bin, cardType, country, price, quantity: stock } = product;
+    const purchaseQuantity = selectedQuantities[bin] || 1; // User selected quantity
 
-    // Ensure the quantity does not exceed stock
-    if (quantity > product.quantity) {
-      toast.error(
-        `You cannot add more than the stock available of this product.`
-      );
-      return; // Exit early if quantity exceeds stock
+    console.log(`Stock for ${bin}: ${stock}`);
+    console.log(`Purchase Quantity for ${bin}: ${purchaseQuantity}`);
+
+    if (purchaseQuantity > stock) {
+      toast.error(`Cannot add more than ${stock} items.`);
+      return;
     }
 
-    // Calculate the total quantity in the cart for this product
-    const existingProduct = cart.find((item) => item.bin === product.bin);
+    const existingProduct = cart.find((item) => item.bin === bin);
     const totalQuantityInCart = existingProduct ? existingProduct.quantity : 0;
 
-    // Check if the quantity in cart plus the selected quantity exceeds the stock
-    if (totalQuantityInCart + quantity > product.quantity) {
+    if (totalQuantityInCart + purchaseQuantity > stock) {
       toast.error(
-        `You cannot add more than ${product.quantity} of this product to the cart.`
+        `You cannot add more than ${stock} of this product in total.`
       );
-      return; // Exit early if adding the quantity exceeds the stock
+      return;
     }
 
-    // Set the loading state for this product to true
     setAddingToCart((prev) => ({
       ...prev,
-      [product.bin]: true,
+      [bin]: true,
     }));
 
-    // Wait for 1 second before updating the cart to show the loading spinner
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Check if the product already exists in the cart
-    const existingProductIndex = cart.findIndex(
-      (item) => item.bin === product.bin
-    );
-
     let newCart;
-    if (existingProductIndex !== -1) {
-      // Product is already in the cart, update the quantity
-      newCart = [...cart];
-      newCart[existingProductIndex].quantity += quantity;
+    if (existingProduct) {
+      newCart = cart.map((item) =>
+        item.bin === bin
+          ? { ...item, quantity: item.quantity + purchaseQuantity }
+          : item
+      );
     } else {
-      // Product is not in the cart, add new item with BIN, Type, Country, and Quantity
       newCart = [
         ...cart,
-        {
-          bin: product.bin,
-          cardType: product.cardType,
-          country: product.country,
-          quantity,
-          price : product.price,
-        },
+        { bin, cardType, country, quantity: purchaseQuantity, price },
       ];
     }
 
-    // Update the cart in the state and localStorage
     setCart(newCart);
     localStorage.setItem("cart", JSON.stringify(newCart));
 
-    // Show success toast
-    toast.success(`${product.cardType || "Product"} added to cart!`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      draggable: true,
-      progress: undefined,
-    });
+    toast.success(`${cardType || "Product"} added to cart!`);
 
-    // Set the loading state for this product to false
     setAddingToCart((prev) => ({
       ...prev,
-      [product.bin]: false,
+      [bin]: false,
     }));
   };
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-      {/* Table Section */}
       <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
         <div className="text-indigo-500 text-lg mb-4 flex items-center space-x-2">
           <span>Dumps with Pin</span>
@@ -147,7 +129,7 @@ const DumpsWithPin = () => {
             <table className="min-w-full text-sm text-gray-400">
               <thead>
                 <tr className="border-b border-gray-700">
-                  <th className="py-3 px-4 text-left">BIN</th>
+                  <th className="py-3 px-4 text-left">BIN (Stock)</th>
                   <th className="py-3 px-4 text-left">Type</th>
                   <th className="py-3 px-4 text-left">Issuer</th>
                   <th className="py-3 px-4 text-left">Country</th>
@@ -182,7 +164,7 @@ const DumpsWithPin = () => {
                         <input
                           type="number"
                           min="1"
-                          max={product.quantity} // Prevent input higher than available stock
+                          max={product.quantity}
                           value={selectedQuantities[product.bin] || 1}
                           onChange={(e) =>
                             handleQuantityChange(
@@ -199,7 +181,7 @@ const DumpsWithPin = () => {
                         <button
                           onClick={() => addToCart(product)}
                           className="bg-indigo-500 text-white py-1 px-4 rounded-md hover:bg-indigo-600"
-                          disabled={addingToCart[product.bin]} // Disable button for the specific product
+                          disabled={addingToCart[product.bin]}
                         >
                           {addingToCart[product.bin] ? (
                             <Spinner size="sm" color="white" />
@@ -216,6 +198,7 @@ const DumpsWithPin = () => {
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };
