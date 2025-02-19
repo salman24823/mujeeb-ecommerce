@@ -1,81 +1,81 @@
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import Papa from "papaparse";
-import ordersModel from "@/models/ordersModel";
 import dbConnection from "@/config/connectDB";
+import userModel from "@/models/userModel";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   await dbConnection();
 
   try {
-    const data = await req.json();
+    const data = await req.json(); // Parse the incoming JSON data
     const { id, Products } = data;
 
-    console.log(Products, "Products");
-
-    if (!id) {
-      return NextResponse.json({ message: "Missing user id." }, { status: 400 });
+    // Validate the incoming data
+    if (!id || !Array.isArray(Products) || Products.length === 0) {
+      return NextResponse.json(
+        { message: "Missing or invalid required fields." },
+        { status: 400 }
+      );
     }
 
-    if (!Products || Products.length === 0) {
-      return NextResponse.json({ message: "No products in the request." }, { status: 400 });
+    // Find the user in the database
+    const result = await userModel.findById(id);
+    if (!result) {
+      return NextResponse.json({ message: "User not found." }, { status: 404 });
     }
 
-    // Path to the CSV file
-    const csvFilePath = path.join(process.cwd(), "public/dumpsWithPin/dumps.csv");
+    const Balance = result.balance; // Access balance as a number
 
-    // Read the file content synchronously
-    const fileContent = fs.readFileSync(csvFilePath, "utf8");
+    // Corrected Bill Calculation
+    const Bill = Products.reduce((total, product) => {
+      return total + product.quantity * parseFloat(product.price);
+    }, 0);
 
-    // Parse CSV content using PapaParse
-    const { data: csvData } = Papa.parse(fileContent, {
-      header: true, // Parse CSV headers
-      skipEmptyLines: true,
+    console.log(Bill, "Total Bill");
+
+    // Check if the user has sufficient balance
+    if (Balance < Bill) {
+      return new NextResponse(
+        JSON.stringify({ message: "Insufficient balance" }),
+        { status: 400 }
+      );
+    }
+
+    console.log(id, Products, "id and product");
+
+    // Send the order to the order API
+    const response = await fetch("https://admin-panel-two-beige.vercel.app/api/client/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, Products }),
     });
 
-    let updatedCSVData = [...csvData]; // Make a copy of CSV data
+    if (!response.ok) {
+      return new NextResponse(
+        JSON.stringify({ message: "Error in completePurchase" }),
+        { status: 500 }
+      );
+    }
 
-    // Find matching products and update stock
-    const matchedProducts = Products.map((product) => {
-      const csvRow = csvData.find((row) => row.bin === product.bin);
-      if (csvRow) {
-        let stock = parseInt(csvRow.quantity, 10);
-        let purchasedQuantity = product.quantity;
+    const isCompleted = await response.json();
+    console.log(isCompleted, "isCompleted");
 
-        if (stock >= purchasedQuantity) {
-          // Deduct stock
-          csvRow.quantity = stock - purchasedQuantity;
-        } else {
-          // If not enough stock, throw an error
-          throw new Error(`Not enough stock for BIN ${product.bin}`);
-        }
+    // Deduct the bill amount from the user's balance
+    result.balance -= Bill;
 
-        return { ...csvRow, quantity: purchasedQuantity }; // Save only the purchased quantity
-      }
-      return null;
-    }).filter(Boolean); // Remove null values
+    // Save the updated user data to the database
+    await result.save();
 
-    console.log("Matched Products:", matchedProducts);
-
-    // Save order to the database
-    const newOrder = new ordersModel({ userId: id, products: matchedProducts });
-    await newOrder.save();
-
-    // Update CSV file with new stock values
-    const updatedCSV = Papa.unparse(updatedCSVData);
-
-    // Write back to the CSV file
-    fs.writeFileSync(csvFilePath, updatedCSV, "utf8");
-
-    return NextResponse.json(
-      { message: "Order saved successfully and stock updated", matchedProducts },
+    return new NextResponse(
+      JSON.stringify({ message: "Purchase successful" }),
       { status: 200 }
     );
+
   } catch (error) {
-    console.error("Error handling POST request:", error);
+    console.error("Error in Purchasing:", error);
     return NextResponse.json(
-      { message: error.message || "Internal server error" },
+      { message: "Internal server error" },
       { status: 500 }
     );
   }
