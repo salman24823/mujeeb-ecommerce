@@ -23,6 +23,8 @@ export default function ActionModal({ cart , setCart }) {
   const [loading, setLoading] = useState(false); // State to manage loading status
   const { data: session } = useSession();
 
+ 
+
 
   const completePurchase = async () => {
     // Check if the cart is empty
@@ -31,7 +33,10 @@ export default function ActionModal({ cart , setCart }) {
       return; // Prevent further execution if the cart is empty
     }
 
+    const userID = session.user.id
+    
     setLoading(true); // Start loading
+
 
     try {
       const response = await fetch("/api/completePurchase", {
@@ -39,7 +44,7 @@ export default function ActionModal({ cart , setCart }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: session.user.id, Products: cart }),
+        body: JSON.stringify({ id: userID, Products: cart }),
       });
 
       if (!response.ok) {
