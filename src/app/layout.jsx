@@ -1,8 +1,8 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";
-import Header from "@/components/Header/page";
-import SessionWrapper from "@/components/SessionWrapper/SessionWrapper";
+import Header from "@/app/components/Header/page";
+import SessionWrapper from "@/app/components/SessionWrapper/SessionWrapper";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

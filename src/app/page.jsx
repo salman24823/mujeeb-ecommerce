@@ -1,13 +1,12 @@
-"use client"
+"use client";
 
 import { Button, Spinner } from "@nextui-org/react";
-import { Key, Eye, EyeOff, Mail } from 'lucide-react'; // Import the necessary icons
+import { Key, Eye, EyeOff, Mail } from "lucide-react"; // Import the necessary icons
 import Link from "next/link";
-import { useState } from 'react';
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { signIn } from "next-auth/react";
-
 
 export default function Home() {
   const [passwordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
@@ -26,7 +25,6 @@ export default function Home() {
     setLoading(true);
 
     try {
-
       // Use NextAuth to sign in
       const loginRes = await signIn("credentials", {
         email: email,
@@ -37,7 +35,7 @@ export default function Home() {
       if (loginRes?.error) {
         toast.error("Error in login: Invalid Email or Password");
       } else {
-        toast.success("Login Successful.")
+        toast.success("Login Successful.");
         router.push("/panel/wallet"); // Navigate to dashboard
       }
     } catch (error) {
@@ -48,13 +46,12 @@ export default function Home() {
     }
   };
 
-
-
   return (
     <div className="p-5 h-screen gap-12 w-full bg-gradient-to-r from-gray-900 via-gray-950 to-gray-900 flex flex-col items-center justify-center">
-
       <div className="w-full sm:w-96 bg-gray-900 rounded-3xl px-8 max-md:px-4 py-10 shadow-2xl border border-gray-700">
-        <h2 className="text-xl font-semibold text-white mb-8 text-center">Website Logo Here !</h2>
+        <h2 className="text-xl font-semibold text-white mb-8 text-center">
+          Website Logo Here !
+        </h2>
 
         {/* email Input */}
         <div className="relative mb-4">
@@ -105,7 +102,9 @@ export default function Home() {
         </div>
       </div>
 
-      <p className=" max-md:px-3 max-md:text-sm text-center text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisicing elit. consectetur adipisicing. </p>
+      <p className="max-md:px-3 max-md:text-sm text-center text-gray-400">
+        Welcome back! Please enter your credentials to access your account.
+      </p>
       
     </div>
   );
