@@ -23,20 +23,18 @@ export default function ActionModal({ cart , setCart }) {
   const [loading, setLoading] = useState(false); // State to manage loading status
   const { data: session } = useSession();
 
- 
-
 
   const completePurchase = async () => {
+
+    console.log(session,"session")
+
     // Check if the cart is empty
     if (cart.length === 0) {
       toast.error("Your cart is empty!");
       return; // Prevent further execution if the cart is empty
     }
 
-    const userID = session.user.id
-    
     setLoading(true); // Start loading
-
 
     try {
       const response = await fetch("/api/completePurchase", {
@@ -44,7 +42,7 @@ export default function ActionModal({ cart , setCart }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id: userID, Products: cart }),
+        body: JSON.stringify({ id: session.user.id, Products: cart }),
       });
 
       if (!response.ok) {
@@ -68,7 +66,7 @@ export default function ActionModal({ cart , setCart }) {
     } catch (error) {
       setLoading(false); // Stop loading in case of an error
 
-      console.log(error,"error from purchasing")
+      console.log(error,"error")
 
       // Show error toast if there is an issue
       toast.error("Error completing purchase. Please try again.");
