@@ -46,7 +46,7 @@ export default function ActionModal({ cart , setCart }) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to complete purchase");
+        console.log(response ,"Failed to complete purchase");
       }
 
       setLoading(false); // Stop loading once response is received

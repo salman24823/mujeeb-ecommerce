@@ -72,3 +72,78 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(req) {
+  try {
+
+    const binListPath = path.join(process.cwd(), "public", "binlist.csv");
+    const dumpsFilePath = path.join(process.cwd(), "public", "dumpsWithPin", "dumps.csv");
+    const NewDumps = await req.json();
+
+    const binListContent = await fs.readFile(binListPath, "utf-8");
+    const binListData = Papa.parse(binListContent, { header: true, skipEmptyLines: true });
+
+    let existingDumps = [];
+    try {
+      const existingContent = await fs.readFile(dumpsFilePath, "utf-8");
+      existingDumps = Papa.parse(existingContent, { header: true, skipEmptyLines: true }).data;
+    } catch (err) {
+      if (err.code !== "ENOENT") throw err; // Ignore file not found error, create new if needed
+    }
+
+    const newEntries = [];
+
+    NewDumps.fieldsData.forEach((row) => {
+      let pin = row.PIN ? row.PIN.trim() : "N/A";
+      Object.values(row).forEach((value) => {
+        if (typeof value === "string" && /^\d/.test(value) && value.includes("=")) {
+          const parts = value.split("=");
+          const cardNumber = parts[0].trim();
+          const sixDigits = cardNumber.slice(0, 6);
+          const afterEqual = parts[1] ? parts[1].trim() : "";
+          const expiryDate = afterEqual.slice(0, 4) || "N/A";
+          const code = afterEqual.slice(4, 7) || "N/A";
+
+          let cardType = "Unknown";
+          if (cardNumber.startsWith("4")) cardType = "Visa Card";
+          else if (cardNumber.startsWith("5")) cardType = "MasterCard";
+          else if (cardNumber.startsWith("3")) cardType = "American Express";
+
+          const matchedBin = binListData.data.find((bin) => bin.BIN === sixDigits);
+          if (matchedBin) {
+            newEntries.push({
+              key: sixDigits,
+              bin: matchedBin.BIN || "Unknown",
+              cardType: cardType,
+              issuer: matchedBin.Issuer || "Unknown",
+              issuerPhone: matchedBin.IssuerPhone || "Unknown",
+              issuerUrl: matchedBin.IssuerUrl || "Unknown",
+              country: matchedBin.CountryName || "Unknown",
+              cardNumber,
+              expiry: expiryDate,
+              code,
+              pin,
+              price : 5
+            });
+          }
+        }
+      });
+    });
+
+    // Merge old and new data, ensuring uniqueness
+    const mergedData = [...existingDumps, ...newEntries];
+    const uniqueData = Array.from(new Map(mergedData.map(item => [JSON.stringify(item), item])).values());
+
+    // Convert back to CSV
+    const csv = Papa.unparse(uniqueData);
+    await fs.writeFile(dumpsFilePath, csv);
+
+    return NextResponse.json({ message: "Data appended to dumps.csv successfully" }, { status: 200 });
+  } catch (error) {
+    console.error("Error processing CSV:", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

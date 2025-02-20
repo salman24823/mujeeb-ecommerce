@@ -91,7 +91,7 @@ export default function AddPins({ loadCSV }) {
         }
 
         try {
-          const response = await fetch("/api/dumpsWithPin", {
+          const response = await fetch("/api/handlePins/pins", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fieldsData: formattedData }),
