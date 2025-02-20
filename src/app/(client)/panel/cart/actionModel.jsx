@@ -63,6 +63,8 @@ export default function ActionModal({ cart , setCart }) {
     } catch (error) {
       setLoading(false); // Stop loading in case of an error
 
+      console.log(error,"error from purchasing")
+
       // Show error toast if there is an issue
       toast.error("Error completing purchase. Please try again.");
     }
