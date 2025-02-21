@@ -1,6 +1,8 @@
 import dbConnection from "@/config/connectDB";
-import ProductModel from "@/models/ProductsModels";
+import OrdersModel from "@/models/ordersModel";
 import { NextResponse } from "next/server";
+
+export const revalidate = 0 ;
 
 export async function GET() {
 
@@ -8,9 +10,7 @@ export async function GET() {
         // Make a request to the external API
         await dbConnection()
 
-        const result = await ProductModel.find()
-
-        console.log("users" , result)
+        const result = await OrdersModel.find()
 
         // Return the data back to the frontend
         return NextResponse.json(result);

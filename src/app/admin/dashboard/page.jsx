@@ -122,22 +122,21 @@ const Overview = () => {
 
   const fetchOrders = async () => {
     try {
-      console.log("Fetching orders from API...");
-
       const response = await fetch("/api/totalOrders", {
         headers: { "Content-Type": "application/json" },
       });
-
-      console.log("Response received:", response);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch orders: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Orders data fetched:", data);
 
-      setOrders(data);
+      const allProducts = data.flatMap((order) => order.products );
+
+      console.log(allProducts.length, "All Products");
+
+      setOrders(allProducts);
 
       // Ensure data is an array
       if (!Array.isArray(data)) {
@@ -152,21 +151,12 @@ const Overview = () => {
       const currentMonth = now.getMonth() + 1;
       const currentWeek = getWeekNumber(now);
 
-      console.log("Current Date Info:", {
-        today,
-        currentYear,
-        currentMonth,
-        currentWeek,
-      });
-
       let dailyCount = 0,
         weeklyCount = 0,
         monthlyCount = 0,
         yearlyCount = 0;
 
       data.forEach((order, index) => {
-        console.log(`Processing order ${index + 1}:`, order);
-
         if (!order.createdAt) {
           console.warn(
             `Skipping order ${index + 1} due to missing createdAt:`,
@@ -190,26 +180,12 @@ const Overview = () => {
         const orderWeek = getWeekNumber(orderDate);
         const orderDay = orderDate.toISOString().split("T")[0];
 
-        console.log(`Order ${index + 1} processed:`, {
-          orderDay,
-          orderWeek,
-          orderMonth,
-          orderYear,
-        });
-
         if (now - orderDate <= 86400000) dailyCount++; // Orders in last 24 hours
         if (orderYear === currentYear) yearlyCount++;
         if (orderMonth === currentMonth && orderYear === currentYear)
           monthlyCount++;
         if (orderWeek === currentWeek && orderYear === currentYear)
           weeklyCount++;
-      });
-
-      console.log("Final transaction counts:", {
-        dailyCount,
-        weeklyCount,
-        monthlyCount,
-        yearlyCount,
       });
 
       // Update sales chart dynamically
@@ -222,8 +198,6 @@ const Overview = () => {
           },
         ],
       }));
-
-      console.log("Sales chart updated.");
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -293,7 +267,7 @@ const Overview = () => {
 
           <div className="bg-gray-900 border border-slate-700 p-4 rounded-xl shadow-lg hover:shadow-xl transition duration-300 space-y-4">
             <div className="w-full flex justify-between">
-              <h1 className="text-gray-500">Total Orders</h1>
+              <h1 className="text-gray-500">Total Sellings</h1>
               <CreditCard className="text-gray-400" />
             </div>
             <h1 className="text-gray-100 text-3xl">
