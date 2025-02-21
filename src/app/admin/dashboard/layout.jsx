@@ -44,13 +44,16 @@ const Layout = ({ children }) => {
   ];
 
   return (
-    <div className="flex bg-gray-900">
+    <div className="flex h-full bg-gray-900">
       {/* Conditionally render Sidebar */}
       {pathname !== "/admin/dashboard/change-password" && (
         <aside
-          className={`md:!sticky border-r md:border-0 border-gray-700 md:top-[52px] md:h-fit top-0 h-full lg:w-64 w-2/3 pt-4 max-[770px]:p-0 bg-gray-900 text-gray-400 transition-all duration-300 ease-in-out transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          className={`md:!sticky border-r md:border-0 border-gray-700 md:h-fit top-0 h-full lg:w-64 w-2/3 max-[770px]:p-0 bg-gray-900 text-gray-400 transition-all duration-300 ease-in-out transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
             } lg:translate-x-0 fixed lg:static top-0 left-0 z-10 lg:z-auto`} >
           <ul>
+            <li className="px-[0.6rem] py-4 mb-4 border-b border-gray-700">
+              <h1>Admin Dashboard</h1>
+            </li>
             <li
               className="hidden w-full p-[0.6rem] border-b border-gray-700 max-[770px]:flex justify-end"
               onClick={() => setSidebarOpen(false)}
@@ -82,7 +85,7 @@ const Layout = ({ children }) => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 h-[92vh] overflow-y-scroll w-full p-6 bg-gray-800 relative">
+      <div className="flex-1 h-screen overflow-y-scroll w-full p-6 bg-gray-800 relative">
         <div key={pathname} style={{ width: "100%" }}>
           {children}
 
@@ -94,6 +97,7 @@ const Layout = ({ children }) => {
           </button>
         </div>
       </div>
+
     </div>
   );
 };

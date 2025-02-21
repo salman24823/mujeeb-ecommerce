@@ -1,7 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";
-import Header from "@/app/components/Header/page";
 import SessionWrapper from "@/app/components/SessionWrapper/SessionWrapper";
 
 import { ToastContainer } from "react-toastify";
@@ -35,7 +34,6 @@ export default function RootLayout({ children }) {
         <SessionWrapper>
           <ToastContainer position="top-center" autoClose={5000} />
           <NextUIProvider>
-            <Header />
             {children}
           </NextUIProvider>
         </SessionWrapper>
