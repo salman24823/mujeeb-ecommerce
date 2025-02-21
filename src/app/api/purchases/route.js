@@ -2,6 +2,8 @@ import dbConnection from '@/config/connectDB';
 import OrdersModel from '@/models/ordersModel';
 import { NextResponse } from 'next/server';
 
+export const revalidate = 0 ;
+
 export async function POST(req) {
     await dbConnection()
 

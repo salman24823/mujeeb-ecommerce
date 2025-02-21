@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Spinner } from "@nextui-org/react";
 import Papa from "papaparse";
 import AddPins from "./AddPins";
@@ -23,7 +23,7 @@ const DumpsWithPin = () => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const dropdownRef = useRef(null);
 
-  const rowsPerPage = 10; // Adjust rows per page as needed
+  const rowsPerPage = 50; // Adjust rows per page as needed
   const [page, setPage] = useState(1); // Initial page
 
   const handleFilterChange = (filter, value) => {
@@ -42,34 +42,20 @@ const DumpsWithPin = () => {
     return [...new Set(products.map((product) => product[key] || ""))];
   };
 
-  // Load CSV Data
-  const loadCSV = async () => {
-    try {
-      const response = await fetch("/dumpsWithPin/dumps.csv");
-      const csvText = await response.text();
-
-      Papa.parse(csvText, {
-        complete: (result) => {
-          const binMap = new Map();
-
-          result.data.forEach((product) => {
-            if (binMap.has(product.bin)) {
-              binMap.get(product.bin).quantity += 1;
-            } else {
-              binMap.set(product.bin, { ...product, quantity: 1 });
-            }
-          });
-
-          setProducts(Array.from(binMap.values()));
-          setLoading(false);
-        },
-        header: true,
-      });
-    } catch (error) {
-      console.error("Error loading CSV:", error);
-      setLoading(false);
-    }
-  };
+   // Load CSV Data
+   const loadCSV = useCallback(async () => {
+     setLoading(true);
+     try {
+       const response = await fetch("/api/handlePins/pins");
+       const data = await response.json();
+       setProducts(data);
+     } catch (error) {
+       console.error("Error loading CSV:", error);
+       setProducts([]);
+     } finally {
+       setLoading(false);
+     }
+   }, []);
 
   useEffect(() => {
     loadCSV();
