@@ -3,11 +3,11 @@ import fs from "fs";
 import path from "path";
 import Papa from "papaparse";
 
+export const revalidate = 0;
+
+const CSV_FILE_PATH = path.join(process.cwd(),"public/dumpsWithPin/dumps.csv");
+
 export async function GET() {
-  const CSV_FILE_PATH = path.join(
-    process.cwd(),
-    "public/dumpsWithPin/dumps.csv"
-  );
   try {
     // Read CSV file directly from the filesystem
     if (!fs.existsSync(CSV_FILE_PATH)) {
@@ -148,8 +148,6 @@ export async function POST(req) {
   }
 }
 
-
-const CSV_FILE_PATH = path.join(process.cwd(), "public/dumpsWithPin/dumps.csv");
 
 export async function PUT(req) {
   try {
