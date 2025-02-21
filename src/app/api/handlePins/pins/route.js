@@ -147,3 +147,57 @@ export async function POST(req) {
     );
   }
 }
+
+
+const CSV_FILE_PATH = path.join(process.cwd(), "public/dumpsWithPin/dumps.csv");
+
+export async function PUT(req) {
+  try {
+    const { bin, price } = await req.json();
+
+    if (!bin || price === undefined) {
+      return NextResponse.json({ error: "BIN and price are required" }, { status: 400 });
+    }
+
+    // Check if CSV file exists
+    if (!fs.existsSync(CSV_FILE_PATH)) {
+      return NextResponse.json({ error: "CSV file not found." }, { status: 500 });
+    }
+
+    // Read the CSV file
+    const fileContent = fs.readFileSync(CSV_FILE_PATH, "utf8");
+    if (!fileContent.trim()) {
+      return NextResponse.json({ error: "CSV file is empty." }, { status: 500 });
+    }
+
+    // Parse CSV content
+    let rawData = Papa.parse(fileContent, { header: true, skipEmptyLines: true }).data;
+
+    // Update the price for all matching bins
+    let updated = false;
+    rawData = rawData.map((row) => {
+      if (row.bin === bin) {
+        row.price = price;
+        updated = true;
+      }
+      return row;
+    });
+
+    if (!updated) {
+      return NextResponse.json({ error: "No matching BIN found." }, { status: 404 });
+    }
+
+    console.log(updated,"new data price")
+
+    // Convert updated data back to CSV format
+    const updatedCSV = Papa.unparse(rawData);
+
+    // Save the updated CSV file
+    fs.writeFileSync(CSV_FILE_PATH, updatedCSV, "utf8");
+
+    return NextResponse.json({ success: true, bin, price });
+  } catch (error) {
+    console.error("❌ Error updating price in CSV:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

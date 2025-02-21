@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { Spinner } from "@nextui-org/react";
 import Papa from "papaparse";
 import AddPins from "./AddPins";
@@ -10,7 +16,14 @@ import { ChevronDown } from "lucide-react";
 const DumpsWithPin = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [editingPrice, setEditingPrice] = useState(null);
+  const [priceInput, setPriceInput] = useState("");
+
+  const handleEdit = (id, price) => {
+    setEditingId(id);
+    setNewPrice(price);
+  };
+
   const [filterItems, setFilterItems] = useState([
     { label: "Type", key: "cardType" },
     { label: "Country", key: "country" },
@@ -42,20 +55,20 @@ const DumpsWithPin = () => {
     return [...new Set(products.map((product) => product[key] || ""))];
   };
 
-   // Load CSV Data
-   const loadCSV = useCallback(async () => {
-     setLoading(true);
-     try {
-       const response = await fetch("/api/handlePins/pins");
-       const data = await response.json();
-       setProducts(data);
-     } catch (error) {
-       console.error("Error loading CSV:", error);
-       setProducts([]);
-     } finally {
-       setLoading(false);
-     }
-   }, []);
+  // Load CSV Data
+  const loadCSV = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/handlePins/pins");
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error loading CSV:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     loadCSV();
@@ -89,9 +102,39 @@ const DumpsWithPin = () => {
     [page, filteredProducts]
   );
 
+  const handlePriceUpdate = async (bin) => {
+    if (!priceInput.trim()) return;
+
+    try {
+      const response = await fetch("/api/handlePins/pins", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bin,
+          price: parseFloat(priceInput),
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update price");
+
+      setProducts((prev) =>
+        prev.map((product) =>
+          product.bin === bin
+            ? { ...product, price: parseFloat(priceInput) }
+            : product
+        )
+      );
+
+      setEditingPrice(null);
+    } catch (error) {
+      console.error("Error updating price:", error);
+    }
+  };
+
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-
       {/* Filters Section */}
       <div className="bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
         <div className="text-indigo-500 text-lg mb-6 flex items-center space-x-2">
@@ -140,7 +183,6 @@ const DumpsWithPin = () => {
             </div>
           ))}
         </div>
-
       </div>
 
       {/* Table Section */}
@@ -168,7 +210,7 @@ const DumpsWithPin = () => {
                   <th className="py-3 px-4 text-left">Card Number</th>
                   <th className="py-3 px-4 text-left">Code</th>
                   <th className="py-3 px-4 text-left">Expiry</th>
-                  <th className="py-3 px-4 text-left">Quantity</th>
+                  <th className="py-3 px-4 text-left">Stock</th>
                   <th className="py-3 px-4 text-left">Price</th>
                 </tr>
               </thead>
@@ -188,7 +230,7 @@ const DumpsWithPin = () => {
                       key={index}
                       className="border-b border-gray-700 hover:bg-gray-800"
                     >
-                      <td className="py-3 px-4">{index + 1}</td>
+                      <td className="py-3 px-4">{start + index + 1}</td>
                       <td className="py-3 px-4">{product.bin}</td>
                       <td className="py-3 px-4">{product.cardType}</td>
                       <td className="py-3 px-4">{product.issuer}</td>
@@ -199,7 +241,34 @@ const DumpsWithPin = () => {
                       <td className="py-3 px-4">{product.code}</td>
                       <td className="py-3 px-4">{product.expiry}</td>
                       <td className="py-3 px-4">{product.quantity}</td>
-                      <td className="py-3 px-4">$ {product.price}</td>
+
+                      {/* Editable Price Column */}
+                      <td className="py-3 px-4">
+                        {editingPrice === product.bin ? (
+                          <input
+                            type="number"
+                            value={priceInput}
+                            onChange={(e) => setPriceInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter")
+                                handlePriceUpdate(product.bin);
+                            }}
+                            onBlur={() => setEditingPrice(null)}
+                            autoFocus
+                            className="w-16 p-1 bg-gray-700 text-white border border-gray-600 rounded outline-none"
+                          />
+                        ) : (
+                          <span
+                            onClick={() => {
+                              setEditingPrice(product.bin);
+                              setPriceInput(product.price);
+                            }}
+                            className="cursor-pointer text-green-500 hover:text-indigo-400"
+                          >
+                            $ {product.price}
+                          </span>
+                        )}
+                      </td>
                     </tr>
                   ))
                 )}
@@ -207,9 +276,31 @@ const DumpsWithPin = () => {
             </table>
           </div>
         )}
+
+        {/* Pagination Controls */}
+        <div className="flex w-fit border border-gray-700 rounded-full overflow-hidden gap-5 items-center mt-4">
+          <Button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+            className="px-4 py-2 rounded-none bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-50"
+          >
+            Previous
+          </Button>
+
+          <span className="text-gray-300">
+            Page {page} of {pages || 1}
+          </span>
+
+          <Button
+            onClick={() => setPage((prev) => Math.min(prev + 1, pages))}
+            disabled={page === pages}
+            className="px-4 py-2 rounded-none bg-gray-800 text-gray-300 hover:bg-gray-700 disabled:opacity-50"
+          >
+            Next
+          </Button>
+        </div>
       </div>
       <AddPins loadCSV={loadCSV} />
-
     </div>
   );
 };
