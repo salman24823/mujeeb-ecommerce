@@ -97,7 +97,7 @@ export default function Home() {
             href="signup"
             className="text-indigo-400 hover:text-indigo-500 transition duration-300 ease-in-out"
           >
-            Sign up
+            Sign up 
           </Link>
         </div>
       </div>
