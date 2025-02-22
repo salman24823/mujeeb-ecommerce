@@ -75,26 +75,28 @@ export async function GET() {
 
 export async function POST(req) {
   try {
-
     const binListPath = path.join(process.cwd(), "public", "binlist.csv");
     const dumpsFilePath = path.join(process.cwd(), "public", "dumpsWithPin", "dumps.csv");
     const NewDumps = await req.json();
 
-    const binListContent = await fs.readFile(binListPath, "utf-8");
+    // Read BIN List CSV
+    const binListContent = await fs.promises.readFile(binListPath, "utf-8");
     const binListData = Papa.parse(binListContent, { header: true, skipEmptyLines: true });
 
+    // Read Existing Dumps CSV (if available)
     let existingDumps = [];
     try {
-      const existingContent = await fs.readFile(dumpsFilePath, "utf-8");
+      const existingContent = await fs.promises.readFile(dumpsFilePath, "utf-8");
       existingDumps = Papa.parse(existingContent, { header: true, skipEmptyLines: true }).data;
     } catch (err) {
-      if (err.code !== "ENOENT") throw err; // Ignore file not found error, create new if needed
+      if (err.code !== "ENOENT") throw err; // Ignore "file not found" error
     }
 
     const newEntries = [];
 
     NewDumps.fieldsData.forEach((row) => {
-      let pin = row.PIN ? row.PIN.trim() : "N/A";
+      const pin = row.PIN ? row.PIN.trim() : "N/A"; // Ensure PIN is safely handled
+
       Object.values(row).forEach((value) => {
         if (typeof value === "string" && /^\d/.test(value) && value.includes("=")) {
           const parts = value.split("=");
@@ -104,17 +106,20 @@ export async function POST(req) {
           const expiryDate = afterEqual.slice(0, 4) || "N/A";
           const code = afterEqual.slice(4, 7) || "N/A";
 
+          // Determine Card Type
           let cardType = "Unknown";
           if (cardNumber.startsWith("4")) cardType = "Visa Card";
           else if (cardNumber.startsWith("5")) cardType = "MasterCard";
           else if (cardNumber.startsWith("3")) cardType = "American Express";
 
+          // Find Matching BIN
           const matchedBin = binListData.data.find((bin) => bin.BIN === sixDigits);
+
           if (matchedBin) {
             newEntries.push({
               key: sixDigits,
               bin: matchedBin.BIN || "Unknown",
-              cardType: cardType,
+              cardType,
               issuer: matchedBin.Issuer || "Unknown",
               issuerPhone: matchedBin.IssuerPhone || "Unknown",
               issuerUrl: matchedBin.IssuerUrl || "Unknown",
@@ -123,28 +128,27 @@ export async function POST(req) {
               expiry: expiryDate,
               code,
               pin,
-              price : 5
+              price: 5
             });
           }
         }
       });
     });
 
-    // Merge old and new data, ensuring uniqueness
-    const mergedData = [...existingDumps, ...newEntries];
-    const uniqueData = Array.from(new Map(mergedData.map(item => [JSON.stringify(item), item])).values());
+    // **Ensure Uniqueness in Merging Old & New Entries**
+    const uniqueData = [
+      ...new Map([...existingDumps, ...newEntries].map(item => [item.cardNumber, item])).values()
+    ];
 
-    // Convert back to CSV
+    // Convert Back to CSV & Save
     const csv = Papa.unparse(uniqueData);
-    await fs.writeFile(dumpsFilePath, csv);
+    await fs.promises.writeFile(dumpsFilePath, csv);
 
     return NextResponse.json({ message: "Data appended to dumps.csv successfully" }, { status: 200 });
+
   } catch (error) {
     console.error("Error processing CSV:", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }
 

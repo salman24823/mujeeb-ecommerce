@@ -8,7 +8,6 @@ import React, {
   useCallback,
 } from "react";
 import { Spinner } from "@nextui-org/react";
-import Papa from "papaparse";
 import AddPins from "./AddPins";
 import { Button } from "@nextui-org/react"; // Assuming Button component is from nextui
 import { ChevronDown } from "lucide-react";
@@ -18,11 +17,6 @@ const DumpsWithPin = () => {
   const [loading, setLoading] = useState(true);
   const [editingPrice, setEditingPrice] = useState(null);
   const [priceInput, setPriceInput] = useState("");
-
-  const handleEdit = (id, price) => {
-    setEditingId(id);
-    setNewPrice(price);
-  };
 
   const [filterItems, setFilterItems] = useState([
     { label: "Type", key: "cardType" },
