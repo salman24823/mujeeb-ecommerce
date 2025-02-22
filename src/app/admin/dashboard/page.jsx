@@ -15,17 +15,23 @@ import {
 import {
   ArrowDownRight,
   CreditCard,
+  HeadsetIcon,
   ShieldCheck,
   User2Icon,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { MdOutlineCreditCardOff } from "react-icons/md";
+import { MdOutlineCreditCardOff, MdQuestionAnswer } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const Overview = () => {
   const [USERS, setUSERS] = useState();
   const [orders, setOrders] = useState();
+
+  const [queries, setQueries] = useState([]); // Stores all queries
+  const [queryWithReply, setQuerywithReply] = useState([]); // Stores queries that have replies
+  const [queryWithNoReply, setQueriewithNoReply] = useState([]); // Stores queries without replies
 
   // Registering chart.js components
   ChartJS.register(
@@ -132,7 +138,7 @@ const Overview = () => {
 
       const data = await response.json();
 
-      const allProducts = data.flatMap((order) => order.products );
+      const allProducts = data.flatMap((order) => order.products);
 
       console.log(allProducts.length, "All Products");
 
@@ -215,20 +221,43 @@ const Overview = () => {
     );
   }
 
+  async function handleQueries() {
+    try {
+      const response = await fetch("/api/handleQueries");
+      if (!response.ok) {
+        toast.error("Error in getting Queries");
+        return;
+      }
+
+      const { data } = await response.json();
+
+      // Queries with replies
+      setQuerywithReply(
+        data.filter((query) => query.reply && query.reply.trim() !== "")
+      );
+
+      // Queries without replies
+      setQueriewithNoReply(
+        data.filter((query) => !query.reply || query.reply.trim() === "")
+      );
+
+      console.log(data, "result query");
+
+      setQueries(data);
+    } catch (error) {
+      console.log(error, "error from queries");
+    }
+  }
+
   useEffect(() => {
+    handleQueries();
     fetchUsers();
     fetchOrders();
   }, []);
 
-  useEffect(() => {
-    console.log("This is session:", session);
-    if (session?.user?.id) {
-      console.log(session.user.id, "USER");
-    }
-  }, [session]);
-
   return (
     <div className="w-full text-white space-y-8">
+
       {/* Header Section */}
       <div className="space-y-6">
         <div className="bg-gray-900 border gap-5 items-center flex border-slate-700 p-8 rounded-xl shadow-2xl max-[770px]:flex-col max-[770px]:text-center">
@@ -278,18 +307,18 @@ const Overview = () => {
 
           <div className="bg-gray-900 border border-slate-700 p-4 rounded-xl shadow-lg hover:shadow-xl transition duration-300 space-y-4">
             <div className="w-full flex justify-between">
-              <h1 className="text-gray-500">Total Dumps No Pin</h1>
-              <MdOutlineCreditCardOff className="text-gray-400 text-2xl" />
+              <h1 className="text-gray-500">Total Queries</h1>
+              <HeadsetIcon className="text-gray-400 text-2xl" />
             </div>
-            <h1 className="text-gray-100 text-3xl">0</h1>
+            <h1 className="text-gray-100 text-3xl"> {queries ? queries.length : <Spinner color="white" />} </h1>
           </div>
 
           <div className="bg-gray-900 border border-slate-700 p-4 rounded-xl shadow-lg hover:shadow-xl transition duration-300 space-y-4">
             <div className="w-full flex justify-between">
-              <h1 className="text-gray-500">Total CVV</h1>
-              <CreditCard className="text-gray-400" />
+              <h1 className="text-gray-500">Pending Queires</h1>
+              <MdQuestionAnswer className="text-gray-400" />
             </div>
-            <h1 className="text-gray-100 text-3xl">0</h1>
+            <h1 className="text-gray-100 text-3xl"> {queryWithNoReply ? queryWithNoReply.length : <Spinner color="white" /> } </h1>
           </div>
         </div>
 
@@ -302,7 +331,6 @@ const Overview = () => {
             />
           </div>
         </div>
-        
       </div>
     </div>
   );
