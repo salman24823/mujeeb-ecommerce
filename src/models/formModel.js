@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 // User Schema for MongoDB
 const formSchema = new mongoose.Schema(
   {
+    userID: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -14,6 +18,9 @@ const formSchema = new mongoose.Schema(
     message: {
       type: String,
       required: true,
+    },
+    reply: {
+      type: String,
     },
   },
   { timestamps: true } // Automatically add createdAt and updatedAt

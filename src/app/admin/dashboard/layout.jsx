@@ -6,7 +6,7 @@ import { Button } from "@nextui-org/react";
 import { CreditCard, LogOut, Globe, User2, Newspaper, SidebarCloseIcon, SidebarOpen } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
-import { MdCreditCardOff } from "react-icons/md";
+import { MdCreditCardOff, MdSupport } from "react-icons/md";
 
 const Layout = ({ children }) => {
   const { data: session } = useSession();
@@ -40,6 +40,11 @@ const Layout = ({ children }) => {
       name: "Dumps No Pins",
       path: "/admin/dashboard/dumpsNoPins",
       icon: <MdCreditCardOff className="w-5 h-5 text-gray-500" />,
+    },
+    {
+      name: "Queries",
+      path: "/admin/dashboard/queries",
+      icon: <MdSupport className="w-5 h-5 text-gray-500" />,
     },
     {
       name: "Sign out",

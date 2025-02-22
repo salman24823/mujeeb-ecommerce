@@ -21,7 +21,7 @@ export default function SubmitModel({formData}) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({formData}),
       });
 
       const data = await response.json();
@@ -35,7 +35,7 @@ export default function SubmitModel({formData}) {
         toast.error(data.message || "Something went wrong");
       }
     } catch (error) {
-      setError("An error occurred while creating the user");
+      setError("An error occurred while Submitting from");
     }
   }
 

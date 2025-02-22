@@ -71,11 +71,11 @@ const Layout = ({ children }) => {
       path: "/panel/purchases",
       icon: <ClipboardEditIcon className="w-5 h-5 text-gray-500" />,
     },
-    // {
-    //   name: "Support",
-    //   path: "/panel/support",
-    //   icon: <HelpCircle className="w-5 h-5 text-gray-500" />,
-    // },
+    {
+      name: "Support",
+      path: "/panel/support",
+      icon: <HelpCircle className="w-5 h-5 text-gray-500" />,
+    },
     {
       name: "Change Password",
       path: "/panel/change-password",
