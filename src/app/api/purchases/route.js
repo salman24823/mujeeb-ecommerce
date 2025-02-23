@@ -5,12 +5,13 @@ import { NextResponse } from 'next/server';
 export const revalidate = 0 ;
 
 export async function POST(req) {
+    
     await dbConnection()
 
     try {
         // Parse the incoming request data
         const data = await req.json();
-        const { userId } = data;  // Assuming the user ID is provided in the request
+        const { userId } = data;  
 
         // Validate userId
         if (!userId) {

@@ -82,7 +82,9 @@ const Purchases = () => {
               {/* Table Body */}
               <tbody>
                 {purchases.map((purchase) =>
-                  purchase.products.map((product) => (
+                  purchase.products
+                  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                  .map((product) => (
                     <tr
                       key={product._id}
                       className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200 bg-gray-900"

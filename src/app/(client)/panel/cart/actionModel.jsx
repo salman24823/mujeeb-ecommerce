@@ -58,9 +58,9 @@ export default function ActionModal({ cart , setCart }) {
 
       localStorage.setItem("cart", JSON.stringify([]));
 
-      setTimeout(() => {
-        window.location.reload(); // Reload the page
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.reload(); // Reload the page
+      // }, 2000);
 
       // Show success popup
     } catch (error) {
