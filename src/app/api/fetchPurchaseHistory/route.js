@@ -2,6 +2,9 @@ import dbConnection from "@/config/connectDB";
 import depositHistory from "@/models/depositHistory";
 import { NextResponse } from "next/server";
 
+export const revalidate = 0;
+
+
 export async function POST(req) {
   await dbConnection();
 
