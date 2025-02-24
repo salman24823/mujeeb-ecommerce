@@ -139,6 +139,9 @@ const Cart = () => {
                   Quantity
                 </td>
                 <td className="py-3 px-4 text-left font-semibold whitespace-nowrap">
+                  Price
+                </td>
+                <td className="py-3 px-4 text-left font-semibold whitespace-nowrap">
                   Action
                 </td>
               </tr>
@@ -184,6 +187,9 @@ const Cart = () => {
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap">
                       {product?.quantity || "Not Available"}
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      {product?.price || "Not Available"}
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap">
                       <Button

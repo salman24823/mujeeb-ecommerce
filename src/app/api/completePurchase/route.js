@@ -48,73 +48,79 @@ export async function POST(req) {
 
     console.log(`🔎 Processing order for user ${id}...`);
 
-    // Define CSV file path
-    const csvFilePath = path.join(process.cwd(), "public/dumpsWithPin/dumps.csv");
-    console.log(`📂 CSV File Path: ${csvFilePath}`);
+    // Define CSV file paths
+    const csvFilePinPath = path.join(process.cwd(), "public/dumpsWithPin/dumps.csv");
+    const csvFileNoPinPath = path.join(process.cwd(), "public/dumpsNoPin/dumps.csv");
 
-    // Read CSV file
-    let csvText;
-    try {
-      csvText = await fs.readFile(csvFilePath, "utf8");
-      console.log("📜 CSV File Read Successfully");
-    } catch (fileError) {
-      console.error("❌ Error reading CSV file:", fileError);
+    // Read CSV files
+    const readCSV = async (filePath) => {
+      try {
+        const csvText = await fs.readFile(filePath, "utf8");
+        if (!csvText.trim()) {
+          console.warn(`⚠️ CSV file is empty: ${filePath}`);
+          return [];
+        }
+        const parsedCSV = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+        console.log(`📜 CSV Loaded: ${filePath}`);
+        return parsedCSV.data;
+      } catch (error) {
+        console.error(`❌ Error reading CSV file: ${filePath}`, error);
+        return null;
+      }
+    };
+
+    let csvDataPin = await readCSV(csvFilePinPath);
+    let csvDataNoPin = await readCSV(csvFileNoPinPath);
+
+    if (csvDataPin === null || csvDataNoPin === null) {
       return NextResponse.json(
-        { message: "Failed to read CSV file." },
+        { message: "Failed to read one or more CSV files." },
         { status: 500 }
       );
     }
-
-    if (!csvText.trim()) {
-      console.warn("⚠️ CSV file is empty");
-      return NextResponse.json(
-        { message: "CSV file is empty." },
-        { status: 500 }
-      );
-    }
-
-    // Parse CSV
-    let csvData;
-    try {
-      const parsedCSV = Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-      });
-      csvData = parsedCSV.data;
-      console.log("✅ CSV Parsed Successfully");
-    } catch (parseError) {
-      console.error("❌ CSV Parsing Error:", parseError);
-      return NextResponse.json(
-        { message: "Error parsing CSV file." },
-        { status: 500 }
-      );
-    }
-
-    console.log("📊 Initial Stock Count:", csvData.length);
 
     let matchedProducts = [];
 
     for (const product of Products) {
-      const { bin, quantity } = product;
-      console.log(`🔍 Processing bin: ${bin}, Requested Quantity: ${quantity}`);
+      const { bin, quantity, label } = product;
+      console.log(`🔍 Processing bin: ${bin}, Requested Quantity: ${quantity}, Label: ${label}`);
+
+      let stockData, filePath;
+
+      if (label === "DumpsWithPin") {
+        stockData = csvDataPin;
+        filePath = csvFilePinPath;
+      } else if (label === "DumpsNoPin") {
+        stockData = csvDataNoPin;
+        filePath = csvFileNoPinPath;
+      } else {
+        console.warn(`⚠️ Unknown label '${label}' for bin ${bin}`);
+        continue;
+      }
 
       let removedRows = [];
       let remainingStock = [];
       let count = 0;
 
-      for (const row of csvData) {
+      for (const row of stockData) {
         if (row.bin === bin && count < quantity) {
-          removedRows.push(row); // Select items to be removed
+          removedRows.push(row);
           count++;
         } else {
-          remainingStock.push(row); // Keep the rest in stock
+          remainingStock.push(row);
         }
       }
 
       if (removedRows.length > 0) {
         console.log(`✅ Removed ${removedRows.length} items of bin ${bin}`);
         matchedProducts.push(...removedRows);
-        csvData = remainingStock; // Update stock data
+
+        // Update the corresponding CSV stock
+        if (label === "DumpsWithPin") {
+          csvDataPin = remainingStock;
+        } else {
+          csvDataNoPin = remainingStock;
+        }
       } else {
         console.warn(`⚠️ No sufficient stock available for bin ${bin}`);
       }
@@ -128,19 +134,25 @@ export async function POST(req) {
       );
     }
 
-    console.log("📉 Updated Stock Count:", csvData.length);
+    console.log("📉 Updating CSV stock...");
 
-    // Save updated stock back to CSV
+    // Save updated stock back to CSV files
+    const saveCSV = async (filePath, data) => {
+      try {
+        const updatedCSVText = Papa.unparse(data);
+        await fs.writeFile(filePath, updatedCSVText, "utf8");
+        console.log(`✅ Stock updated in CSV file: ${filePath}`);
+      } catch (error) {
+        console.error(`❌ Error writing CSV file: ${filePath}`, error);
+        throw new Error(`Failed to update CSV file: ${filePath}`);
+      }
+    };
+
     try {
-      const updatedCSVText = Papa.unparse(csvData);
-      await fs.writeFile(csvFilePath, updatedCSVText, "utf8");
-      console.log("✅ Stock updated in CSV file");
-    } catch (writeError) {
-      console.error("❌ Error writing CSV file:", writeError);
-      return NextResponse.json(
-        { message: "Failed to update CSV file." },
-        { status: 500 }
-      );
+      await saveCSV(csvFilePinPath, csvDataPin);
+      await saveCSV(csvFileNoPinPath, csvDataNoPin);
+    } catch (error) {
+      return NextResponse.json({ message: error.message }, { status: 500 });
     }
 
     // Save order to database

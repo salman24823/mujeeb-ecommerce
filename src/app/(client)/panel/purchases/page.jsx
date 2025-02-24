@@ -111,7 +111,7 @@ const Purchases = () => {
                       <td className="py-3 px-4">{product.cardNumber}</td>
                       <td className="py-3 px-4">{product.expiry}</td>
                       <td className="py-3 px-4">{product.code}</td>
-                      <td className="py-3 px-4">{product.pin}</td>
+                      <td className="py-3 px-4">{product.pin || "-"}</td>
                     </tr>
                   ))
                 )}
