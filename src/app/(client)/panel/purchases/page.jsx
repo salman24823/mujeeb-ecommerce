@@ -83,7 +83,7 @@ const Purchases = () => {
               <tbody>
                 {purchases.map((purchase) =>
                   purchase.products
-                  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                  .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
                   .map((product) => (
                     <tr
                       key={product._id}
