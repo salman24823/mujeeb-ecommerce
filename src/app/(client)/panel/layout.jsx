@@ -53,13 +53,15 @@ const Layout = ({ children }) => {
     },
     {
       name: "CVV",
-      path: "/panel/CVV",
+      path: "/panel/#",
       icon: <CreditCard className="w-5 h-5 text-gray-500" />,
+      commingSoon : <p className="px-2 border rounded-full bg-gray-700 border-gray-900">coming soon</p>
     },
     {
       name: "Pre Order",
-      path: "/panel/pre-order",
+      path: "/panel/#",
       icon: <ShoppingBasket className="w-5 h-5 text-gray-500" />,
+      commingSoon : <p className="px-2 border rounded-full bg-gray-700 border-gray-900">coming soon</p>
     },
     {
       name: "Cart",
@@ -133,6 +135,7 @@ const Layout = ({ children }) => {
                     >
                       {route.icon}
                       {route.name}
+                      {route.commingSoon}
                     </Link>
                   </Button>
                 </li>

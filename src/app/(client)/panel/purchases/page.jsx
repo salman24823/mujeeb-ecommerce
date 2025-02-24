@@ -66,6 +66,7 @@ const Purchases = () => {
               {/* Table Headings */}
               <thead>
                 <tr className="border-b border-gray-700">
+                  <td className="py-3 px-6 text-left font-semibold text-gray-300">#</td>
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">BIN</td>
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">Card Type</td>
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer</td>
@@ -83,12 +84,13 @@ const Purchases = () => {
               <tbody>
                 {purchases.map((purchase) =>
                   purchase.products
-                  .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                  .map((product) => (
+               
+                  .map((product,index) => (
                     <tr
                       key={product._id}
                       className="border-b border-gray-700 hover:bg-gray-800 transition-colors duration-200 bg-gray-900"
                     >
+                      <td className="py-3 px-4">{index + 1}</td>
                       <td className="py-3 px-4">{product.bin}</td>
                       <td className="py-3 px-4">{product.cardType}</td>
                       <td className="py-3 px-4">{product.issuer}</td>
