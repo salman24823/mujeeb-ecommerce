@@ -6,6 +6,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const DumpsWithPin = () => {
+
+  const label = "DumpsWithPin";
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState([]);
@@ -63,51 +66,49 @@ const DumpsWithPin = () => {
   const addToCart = async (product) => {
     const { bin, cardType, country, price, quantity: stock } = product;
     const purchaseQuantity = selectedQuantities[bin] || 1; // User selected quantity
-
+  
     console.log(`Stock for ${bin}: ${stock}`);
     console.log(`Purchase Quantity for ${bin}: ${purchaseQuantity}`);
-
+  
     if (purchaseQuantity > stock) {
       toast.error(`Cannot add more than ${stock} items.`);
       return;
     }
-
+  
     const existingProduct = cart.find((item) => item.bin === bin);
     const totalQuantityInCart = existingProduct ? existingProduct.quantity : 0;
-
+  
     if (totalQuantityInCart + purchaseQuantity > stock) {
-      toast.error(
-        `You cannot add more than ${stock} of this product in total.`
-      );
+      toast.error(`You cannot add more than ${stock} of this product in total.`);
       return;
     }
-
+  
     setAddingToCart((prev) => ({
       ...prev,
       [bin]: true,
     }));
-
+  
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
+  
     let newCart;
     if (existingProduct) {
       newCart = cart.map((item) =>
         item.bin === bin
-          ? { ...item, quantity: item.quantity + purchaseQuantity }
+          ? { ...item, quantity: item.quantity + purchaseQuantity, label: label }
           : item
       );
     } else {
       newCart = [
         ...cart,
-        { bin, cardType, country, quantity: purchaseQuantity, price },
+        { bin, cardType, country, quantity: purchaseQuantity, price, label: label },
       ];
     }
-
+  
     setCart(newCart);
     localStorage.setItem("cart", JSON.stringify(newCart));
-
+  
     toast.success(`${cardType || "Product"} added to cart!`);
-
+  
     setAddingToCart((prev) => ({
       ...prev,
       [bin]: false,
