@@ -5,12 +5,21 @@ import { usePathname } from "next/navigation";
 import { Button } from "@nextui-org/react";
 import { CreditCard, LogOut, Globe, User2, Newspaper, SidebarCloseIcon, SidebarOpen } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdCreditCardOff, MdSupport } from "react-icons/md";
 
 const Layout = ({ children }) => {
   const { data: session } = useSession();
   const pathname = usePathname();
+  
+    useEffect(() => {
+      if (session?.user?.email !== "admin@gmail.com") {
+        // alert("Not Authenticated")
+        location.replace("/")
+  
+        return ""
+      } 
+    }, [session]);
 
   // State for controlling the sidebar visibility
   const [sidebarOpen, setSidebarOpen] = useState(false);

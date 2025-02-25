@@ -13,19 +13,21 @@ import {
   Filler,
 } from "chart.js";
 import {
-  ArrowDownRight,
   CreditCard,
   HeadsetIcon,
-  ShieldCheck,
   User2Icon,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { MdOutlineCreditCardOff, MdQuestionAnswer } from "react-icons/md";
+import { MdQuestionAnswer } from "react-icons/md";
 import { toast } from "react-toastify";
 
+
 const Overview = () => {
+
+  const { data: session } = useSession();
+
   const [USERS, setUSERS] = useState();
   const [orders, setOrders] = useState();
 
@@ -100,8 +102,6 @@ const Overview = () => {
       },
     },
   };
-
-  const { data: session } = useSession();
 
   // fetch users ok
   const fetchUsers = async () => {
