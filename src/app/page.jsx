@@ -24,6 +24,13 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
 
+    if (email == "admin@gmail.com") {
+      alert("You are Not an Admin");
+      setEmail("");
+      setPassword("");
+      return
+    }
+
     try {
       // Use NextAuth to sign in
       const loginRes = await signIn("credentials", {
@@ -97,7 +104,7 @@ export default function Home() {
             href="signup"
             className="text-indigo-400 hover:text-indigo-500 transition duration-300 ease-in-out"
           >
-            Sign up 
+            Sign up
           </Link>
         </div>
       </div>
@@ -105,7 +112,6 @@ export default function Home() {
       <p className="max-md:px-3 max-md:text-sm text-center text-gray-400">
         Welcome back! Please enter your credentials to access your account.
       </p>
-      
     </div>
   );
 }
