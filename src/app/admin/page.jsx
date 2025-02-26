@@ -31,8 +31,6 @@ export default function Home() {
     setLoading(true);
 
     try {
-      console.log("Email:", email);
-      console.log("Password:", password);
 
       // Use NextAuth to sign in
       const loginRes = await signIn("credentials", {
