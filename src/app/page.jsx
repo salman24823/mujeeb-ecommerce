@@ -22,14 +22,16 @@ export default function Home() {
 
   const handleCredentialsLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     if (email == "admin@gmail.com") {
       alert("You are Not an Admin");
       setEmail("");
       setPassword("");
-      return
+      setLoading(false);
+      return;
     }
+
+    setLoading(true);
 
     try {
       // Use NextAuth to sign in
