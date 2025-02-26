@@ -21,6 +21,13 @@ export default function Home() {
 
   const handleCredentialsLogin = async (e) => {
     e.preventDefault();
+
+    if (email !== "admin@gmail.com") {
+      alert("Are Trying to login as user instead of Admin ?");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
 
     try {

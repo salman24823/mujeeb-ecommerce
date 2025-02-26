@@ -24,9 +24,7 @@ export default function Home() {
     e.preventDefault();
 
     if (email == "admin@gmail.com") {
-      alert("You are Not an Admin");
-      setEmail("");
-      setPassword("");
+      alert("You are Not an Admin.");
       setLoading(false);
       return;
     }
