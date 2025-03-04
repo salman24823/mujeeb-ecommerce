@@ -69,10 +69,10 @@ const Purchases = () => {
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">#</td>
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">BIN</td>
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">Card Type</td>
-                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer</td>
-                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer Phone</td>
-                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer URL</td>
-                  <td className="py-3 px-6 text-left font-semibold text-gray-300">Country</td>
+                  {/* <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer</td> */}
+                  {/* <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer Phone</td> */}
+                  {/* <td className="py-3 px-6 text-left font-semibold text-gray-300">Issuer URL</td> */}
+                  {/* <td className="py-3 px-6 text-left font-semibold text-gray-300">Country</td> */}
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">Card Number</td>
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">Expiry</td>
                   <td className="py-3 px-6 text-left font-semibold text-gray-300">Code</td>
@@ -93,9 +93,9 @@ const Purchases = () => {
                       <td className="py-3 px-4">{index + 1}</td>
                       <td className="py-3 px-4">{product.bin}</td>
                       <td className="py-3 px-4">{product.cardType}</td>
-                      <td className="py-3 px-4">{product.issuer}</td>
-                      <td className="py-3 px-4">{product.issuerPhone}</td>
-                      <td className="py-3 px-4">
+                      {/* <td className="py-3 px-4">{product.issuer}</td> */}
+                      {/* <td className="py-3 px-4">{product.issuerPhone}</td> */}
+                      {/* <td className="py-3 px-4">
                         {product.issuerUrl !== "Unknown" ? (
                           <a
                             href={product.issuerUrl}
@@ -108,8 +108,8 @@ const Purchases = () => {
                         ) : (
                           "N/A"
                         )}
-                      </td>
-                      <td className="py-3 px-4">{product.country}</td>
+                      </td> */}
+                      {/* <td className="py-3 px-4">{product.country}</td> */}
                       <td className="py-3 px-4">{product.cardNumber}</td>
                       <td className="py-3 px-4">{product.expiry}</td>
                       <td className="py-3 px-4">{product.code}</td>

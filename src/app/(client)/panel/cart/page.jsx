@@ -182,9 +182,9 @@ const Cart = () => {
                     <td className="py-3 px-4 whitespace-nowrap">
                       {product?.cardType || "Not Available"}
                     </td>
-                    <td className="py-3 px-4 whitespace-nowrap">
+                    {/* <td className="py-3 px-4 whitespace-nowrap">
                       {product?.country || "Not Available"}
-                    </td>
+                    </td> */}
                     <td className="py-3 px-4 whitespace-nowrap">
                       {product?.quantity || "Not Available"}
                     </td>
