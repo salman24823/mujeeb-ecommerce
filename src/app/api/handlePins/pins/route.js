@@ -54,9 +54,12 @@ export async function GET() {
           pin: row.pin || "N/A",
           quantity: 1,
           price: row.price || "N/A",
+          dump : row.dump || "N/A",
         });
       }
     });
+
+
 
     // Convert map values to an array
     const formattedData = Array.from(dataMap.values());
@@ -115,6 +118,8 @@ export async function POST(req) {
           // Find Matching BIN
           const matchedBin = binListData.data.find((bin) => bin.BIN === sixDigits);
 
+          console.log(value,"value from dump with pin")
+
           if (matchedBin) {
             newEntries.push({
               key: sixDigits,
@@ -128,7 +133,8 @@ export async function POST(req) {
               expiry: expiryDate,
               code,
               pin,
-              price: 5
+              price: 5,
+              dump: value,
             });
           }
         }

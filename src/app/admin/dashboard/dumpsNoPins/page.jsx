@@ -196,6 +196,7 @@ const DumpsNoPin = () => {
                 <tr className="border-b border-gray-700">
                   <th className="py-3 px-4 text-left">#</th>
                   <th className="py-3 px-4 text-left">BIN</th>
+                  <th className="py-3 px-4 text-left">DUMP</th>
                   <th className="py-3 px-4 text-left">Type</th>
                   <th className="py-3 px-4 text-left">Issuer</th>
                   <th className="py-3 px-4 text-left">Issuer Phone</th>
@@ -226,6 +227,7 @@ const DumpsNoPin = () => {
                     >
                       <td className="py-3 px-4">{start + index + 1}</td>
                       <td className="py-3 px-4">{product.bin}</td>
+                      <td className="py-3 px-4">{product.dump}</td>
                       <td className="py-3 px-4">{product.cardType}</td>
                       <td className="py-3 px-4">{product.issuer}</td>
                       <td className="py-3 px-4">{product.issuerPhone}</td>

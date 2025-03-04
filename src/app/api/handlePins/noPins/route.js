@@ -54,6 +54,7 @@ export async function GET() {
           // pin: row.pin || "N/A",
           quantity: 1,
           price: row.price || "N/A",
+          dump: row.dump || "N/A",
         });
       }
     });
@@ -145,6 +146,7 @@ export async function POST(req) {
               expiry: expiryDate,
               code,
               price: 5,
+              dump: value,
             });
           }
         }

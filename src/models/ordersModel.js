@@ -18,6 +18,7 @@ const OrderSchema = new mongoose.Schema(
         expiry: String,
         code: String,
         pin: String,
+        dump: String,
       },
     ],
   },

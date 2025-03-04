@@ -155,6 +155,8 @@ export async function POST(req) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
 
+    console.log(matchedProducts,"matchedProducts from csv`")
+
     // Save order to database
     try {
       const newOrder = new ordersModel({
