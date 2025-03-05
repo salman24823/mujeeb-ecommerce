@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 
 export default function Home() {
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +22,7 @@ export default function Home() {
   const handleCredentialsLogin = async (e) => {
     e.preventDefault();
 
-    if (email !== "admin@gmail.com") {
+    if (username !== "admin") {
       alert("Are Trying to login as user instead of Admin ?");
       setLoading(false);
       return;
@@ -34,7 +34,7 @@ export default function Home() {
 
       // Use NextAuth to sign in
       const loginRes = await signIn("credentials", {
-        email: email,
+        username: username,
         password: password,
         redirect: false, // Don't auto redirect
       });
@@ -66,9 +66,9 @@ export default function Home() {
         <div className="relative mb-4">
           <Mail className="absolute max-md:w-5 h-5 left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
-            type="email"
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            type="username"
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="username"
             className="max-md:text-sm w-full max-md:pl-10 pl-12 p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
           />
         </div>
