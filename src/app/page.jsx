@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Spinner } from "@nextui-org/react";
-import { Key, Eye, EyeOff, Mail } from "lucide-react"; // Import the necessary icons
+import { Key, Eye, EyeOff, Mail, User } from "lucide-react"; // Import the necessary icons
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ import { signIn } from "next-auth/react";
 
 export default function Home() {
   const [passwordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +23,7 @@ export default function Home() {
   const handleCredentialsLogin = async (e) => {
     e.preventDefault();
 
-    if (email == "admin@gmail.com") {
+    if (username == "admin") {
       alert("You are Not an Admin.");
       setLoading(false);
       return;
@@ -34,7 +34,7 @@ export default function Home() {
     try {
       // Use NextAuth to sign in
       const loginRes = await signIn("credentials", {
-        email: email,
+        username: username,
         password: password,
         redirect: false, // Don't auto redirect
       });
@@ -62,11 +62,11 @@ export default function Home() {
 
         {/* email Input */}
         <div className="relative mb-4">
-          <Mail className="absolute max-md:w-5 h-5 left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <User className="absolute max-md:w-5 h-5 left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
-            type="email"
-            placeholder="email"
-            onChange={(e) => setEmail(e.target.value)}
+            type="username"
+            placeholder="username"
+            onChange={(e) => setUsername(e.target.value)}
             className="max-md:text-sm w-full max-md:pl-10 pl-12 p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
           />
         </div>

@@ -11,17 +11,17 @@ export const authOptions = NextAuth({
       name: "credentials",
       credentials: {},
       async authorize(credentials) {
-        const { email, password } = credentials;
+        const { username, password } = credentials;
 
         try {
           await database(); // Connect to the database
 
           let user;
 
-          if(email == "admin@gmail.com"){
-            user = await adminModel.findOne({email})
+          if(username == "admin"){
+            user = await adminModel.findOne({username})
           }else {
-            user = await User.findOne({ email });
+            user = await User.findOne({ username });
           }
 
           if (!user) {
@@ -57,14 +57,14 @@ export const authOptions = NextAuth({
       if (user) {
         token.id = user._id;
         token.username = user.username;
-        token.email = user.email;
+        // token.email = user.email;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.username = token.username;
-      session.user.email = token.email;
+      // session.user.email = token.email;
       return session;
     },
   },
