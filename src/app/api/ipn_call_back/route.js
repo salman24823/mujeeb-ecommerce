@@ -1,8 +1,9 @@
 // import crypto from "crypto";
 import depositHistory from "@/models/depositHistory";
-import IPNCALLBACK from "@/models/ipnCallBack";
 import userModel from "@/models/userModel";
 import { NextResponse } from "next/server";
+import { writeFile } from "fs/promises";
+import path from "path"
 
 export async function POST(req) {
     try {
@@ -18,6 +19,23 @@ export async function POST(req) {
         console.log("Received IPN Data:", JSON.stringify(data, null, 2));
 
         // const saved = await IPNCALLBACK.save(data)
+        try {
+            const jsonString = JSON.stringify(data, null, 2); // Pretty-print JSON
+        
+            // Generate a random number for the filename
+            const randomNum = Math.floor(100000 + Math.random() * 900000);
+            const fileName = `IPN_${randomNum}.txt`;
+        
+            // Define the path to save the file in the public folder
+            const filePath = path.join(process.cwd(), "public", fileName);
+        
+            // Write the data to the file
+            await writeFile(filePath, jsonString, "utf8");
+            
+            console.log(`✅ File saved: ${fileName}`);
+        } catch (error) {
+            console.error("❌ Error writing file:", error.message);
+        }
 
         if (data.status == "finished") {
 
