@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, Spinner } from "@nextui-org/react";
-import { Key, Eye, EyeOff, Mail } from "lucide-react";
+import { Key, Eye, EyeOff, Mail, User } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -64,7 +64,7 @@ export default function Home() {
 
         {/* Email Input */}
         <div className="relative mb-4">
-          <Mail className="absolute max-md:w-5 h-5 left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <User className="absolute max-md:w-5 h-5 left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="username"
             onChange={(e) => setUsername(e.target.value)}

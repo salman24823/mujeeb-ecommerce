@@ -18,10 +18,15 @@ export const authOptions = NextAuth({
 
           let user;
 
-          if(username == "admin"){
-            user = await adminModel.findOne({username})
-          }else {
+          if (username === "admin") {
+            user = await adminModel.findOne({ username });
+          } else {
             user = await User.findOne({ username });
+          
+            // If user exists and is NOT an admin, check if the status is activated
+            if (user && user.status !== "activated") {
+              return null; // User is not activated
+            }
           }
 
           if (!user) {
@@ -30,7 +35,7 @@ export const authOptions = NextAuth({
 
           // Compare hashed password with provided password
           const isMatch = await bcrypt.compare(password, user.password);
-
+          
           if (!isMatch) {
             return null; // Invalid password
           }
