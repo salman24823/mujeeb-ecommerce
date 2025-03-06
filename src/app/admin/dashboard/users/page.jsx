@@ -52,7 +52,6 @@ const Users = () => {
 
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
-      <button onClick={()=> console.log(Users,"Users") }>clg</button>
       <div className="overflow-x-scroll bg-gray-900 border border-slate-700 p-6 rounded-lg shadow-xl">
         <div className="text-indigo-500 text-xl mb-4 flex items-center space-x-2">
           <User2 size={24} />
