@@ -49,6 +49,8 @@ export default function ActionModal({ cart , setCart }) {
         console.log(response ,"Failed to complete purchase");
         toast.error("Insufficient Balance")
         setLoading(false); // Start loading
+        location.replace("/panel/wallet")
+        
         return
       }
 
