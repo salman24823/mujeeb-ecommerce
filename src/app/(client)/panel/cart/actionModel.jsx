@@ -48,7 +48,7 @@ export default function ActionModal({ cart , setCart }) {
       if (!response.ok) {
         console.log(response ,"Failed to complete purchase");
         toast.error("Insufficient Balance")
-        setLoading(true); // Start loading
+        setLoading(false); // Start loading
         return
       }
 
