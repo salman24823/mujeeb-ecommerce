@@ -47,6 +47,8 @@ export default function ActionModal({ cart , setCart }) {
 
       if (!response.ok) {
         console.log(response ,"Failed to complete purchase");
+        toast.error(response.message)
+        return
       }
 
       setLoading(false); // Stop loading once response is received
