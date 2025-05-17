@@ -1,8 +1,9 @@
 "use client";
 
 // import Link from 'next/link';
-import { Spinner } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
 import { Clock, LinkIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
@@ -25,12 +26,27 @@ const News = () => {
     }
   };
 
+  const { data : sessionData } = useSession(); // Get session data
+
   useEffect(() => {
+
     fetchNews();
   }, []);
 
+  function ABCD() {
+    console.log("Session data in console", sessionData);
+  }
+
+
+  if (!sessionData?.user) {
+
+    location.replace("/")
+    
+  } 
+
   return (
     <div className="w-full h-full text-white space-y-6">
+
       {loading ? (
         <div className="w-full flex justify-center items-center">
           <Spinner />
