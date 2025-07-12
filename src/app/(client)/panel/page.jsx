@@ -5,9 +5,9 @@ import { Button, Spinner } from "@nextui-org/react";
 import { Clock, LinkIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-const router = useRouter();
+// const router = useRouter();
 
 
 const News = () => {
@@ -41,11 +41,11 @@ const News = () => {
   }
 
 
-  useEffect(() => {
-    if (!session?.user) {
-      router.replace("/"); // redirect to home
-    }
-  }, [session, router]);
+  // useEffect(() => {
+  //   if (!session?.user) {
+  //     router.replace("/"); // redirect to home
+  //   }
+  // }, [session, router]);
 
   return (
     <div className="w-full h-full text-white space-y-6">
