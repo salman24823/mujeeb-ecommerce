@@ -19,8 +19,9 @@ export async function POST(req) {
         }
 
         // Hash the password using bcrypt
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // const salt = await bcrypt.genSalt(10);
+        // const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = password;
 
         // Save the user to the database
         const newUser = new users({

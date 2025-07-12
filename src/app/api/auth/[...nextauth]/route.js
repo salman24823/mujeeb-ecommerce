@@ -2,7 +2,7 @@ import database from "@/config/connectDB";
 import User from "@/models/userModel";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 import adminModel from "@/models/adminModel";
 
 export const authOptions = NextAuth({
@@ -34,7 +34,10 @@ export const authOptions = NextAuth({
           }
 
           // Compare hashed password with provided password
-          const isMatch = await bcrypt.compare(password, user.password);
+          // const isMatch = await bcrypt.compare(password, user.password);
+
+          // compare passwords directly for simplicity
+          const isMatch = password === user.password;
           
           if (!isMatch) {
             return null; // Invalid password
