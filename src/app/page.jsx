@@ -59,7 +59,7 @@ export default function Home() {
     <div className="p-5 h-screen gap-12 w-full bg-gradient-to-r from-gray-900 via-gray-950 to-gray-900 flex flex-col items-center justify-center">
       <div className="w-full sm:w-96 bg-gray-900 rounded-3xl px-8 max-md:px-4 py-10 shadow-2xl border border-gray-700">
         {/* <h2 className="text-xl font-semibold text-white mb-8 text-center"> */}
-        <div className="flex justify-center mb-5">
+        <div className="flex justify-center mb-5 opacity-80">
           <Image src={Logo} alt="Logo" width={50} />
         </div>
         {/* </h2> */}
