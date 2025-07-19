@@ -1,113 +1,107 @@
-// import crypto from "crypto";
 import depositHistory from "@/models/depositHistory";
 import userModel from "@/models/userModel";
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path"
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+import fs from "fs";
 
 export async function POST(req) {
-    try {
-        // Parse the incoming JSON request body
-        const data = await req.json();
+  // Ensure `public/` directory exists (should already in Next.js)
+  const publicDir = path.join(process.cwd(), "public");
 
-        const funds = data.price_amount
+  // Helper function to save any object to a .txt file
+  async function saveToTxtFile(namePrefix, contentObj) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const fileName = `${namePrefix}_${timestamp}.txt`;
+    const filePath = path.join(publicDir, fileName);
+    const textContent =
+      typeof contentObj === "string"
+        ? contentObj
+        : JSON.stringify(contentObj, null, 2);
+    await writeFile(filePath, textContent, "utf8");
+    console.log(`📄 Saved to file: ${fileName}`);
+  }
 
-        console.log(funds,"funds")
+  try {
+    // Parse request body
+    const data = await req.json();
+    const funds = data.price_amount;
 
-        console.log(data,"data")
+    // ✅ Save full IPN request data for debugging
+    await saveToTxtFile("IPN_REQUEST", data);
 
-        console.log("Received IPN Data:", JSON.stringify(data, null, 2));
+    // Log some details for server console
+    console.log("✅ Received IPN:", data);
 
-        // const saved = await IPNCALLBACK.save(data)
-        try {
-            const jsonString = JSON.stringify(data, null, 2); // Pretty-print JSON
-        
-            // Generate a random number for the filename
-            const randomNum = Math.floor(100000 + Math.random() * 900000);
-            const fileName = `IPN_${randomNum}.txt`;
-        
-            // Define the path to save the file in the public folder
-            const filePath = path.join(process.cwd(), "public", fileName);
-        
-            // Write the data to the file
-            await writeFile(filePath, jsonString, "utf8");
-            
-            console.log(`✅ File saved: ${fileName}`);
-        } catch (error) {
-            console.error("❌ Error writing file:", error.message);
-        }
+    if (data.status === "finished") {
+      console.log(`💰 Payment Finished | Order ID: ${data.order_id}`);
 
-        if (data.status == "finished") {
+      const result = await depositHistory.findOne({ order_id: data.order_id });
 
-            console.log(`✅ Payment Finished for Order ID: ${data.order_id}`);
-            console.log(`Amount: 💰 ${data.price_amount}`);
+      if (result) {
+        if (result.status === "waiting") {
+          result.status = "finished";
+          result.price_amount = funds;
+          await result.save();
 
-            // Fetch the deposit history record by order_id
-            console.log(`Fetching deposit history for Order ID: ${data.order_id}`);
-            const result = await depositHistory.findOne({ order_id: data.order_id });
-            
-            if (result) {
-                console.log("Deposit history record found:", JSON.stringify(result, null, 2));
+          const user = await userModel.findById(result.userID);
 
-                if (result.status == "waiting") {
+          if (user) {
+            const updatedBalance = Number(user.balance) + Number(funds);
+            user.balance = updatedBalance;
+            await user.save();
 
-                    console.log(`Deposit status is "waiting". Updating it to "finished".`);
-                    result.status = "finished";
-
-                    result.price_amount = funds;  /////////////////  ???? 
-
-                    // Save the updated deposit history record
-                    await result.save();
-                    console.log(`Deposit history updated for Order ID: ${data.order_id}`);
-
-                    // Fetch the user by user_id
-                    console.log(`Fetching user with ID: ${result.userID}`);
-                    console.log(result,"result")
-
-                    const user = await userModel.findById(result.userID);
-
-                    if (user) {
-                        // console.log(`User found: ${JSON.stringify(user, null, 2)}`);
-
-                        console.log(user,"user")
-
-                        const ActualBalance = user.balance;
-                        console.log(ActualBalance,"ActualBalance")
-
-                        const updatedBalance = Number(ActualBalance) + Number(funds);
-
-                        console.log(updatedBalance,"updatedBalance")
-
-                        // Update the user's balance
-                        user.balance = updatedBalance;
-                        await user.save();
-                        console.log(`Updated balance for user ID: ${user._id} to: ${updatedBalance}`);
-                    } else {
-                        console.error(`User with ID ${result.userID} not found.`);
-                    }
-                } else {
-                    console.log(`Deposit status for Order ID: ${data.order_id} is not "waiting", no update necessary.`);
-                }
-
-            } else {
-                console.error(`No deposit history found for Order ID: ${data.order_id}`);
-            }
-
+            console.log(
+              `✅ Updated balance for user ${user._id}: ${updatedBalance}`
+            );
+          } else {
+            console.error(`❌ User not found: ${result.userID}`);
+            // save this error to a file
+            await saveToTxtFile("USER_NOT_FOUND", {
+              userID: result.userID,
+              order_id: data.order_id,
+            });
+          }
         } else {
-            console.log(`⏳ Waiting... | Payment status is ${data.payment_status} for Order ID: ${data.order_id}`);
+          console.log(`⏳ Status is "${result.status}" – no update made.`);
+          await saveToTxtFile("STATUS_NOT_WAITING", {
+            order_id: data.order_id,
+            status: result.status,
+          });
         }
-
-        // Respond with success for testing
-        console.log("IPN processed successfully");
-        return NextResponse.json(
-            { message: "IPN processed successfully for testing" },
-            { status: 200 }
+      } else {
+        console.error(
+          `❌ No deposit history found for order: ${data.order_id}`
         );
-    } catch (error) {
-        console.error("Error processing IPN:", error);
-        return NextResponse.json(
-            { message: "Internal server error" },
-            { status: 500 }
-        );
+        await saveToTxtFile("NO_DEPOSIT_HISTORY", { order_id: data.order_id });
+      }
+    } else {
+      console.log(
+        `⏳ Payment status: ${data.payment_status} | Order ID: ${data.order_id}`
+      );
+      await saveToTxtFile("IPN_STATUS_NOT_FINISHED", {
+        order_id: data.order_id,
+        status: data.status,
+      });
     }
+
+    return NextResponse.json(
+      { message: "IPN processed successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("❌ Error in IPN Handler:", error);
+    // Save error details
+    await saveToTxtFile("IPN_ERROR", {
+      timestamp: new Date().toISOString(),
+      message: error,
+      status: "500",
+      //   stack: error.stack,
+    });
+
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

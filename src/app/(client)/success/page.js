@@ -7,7 +7,7 @@ export default function SuccessPage() {
         
         {/* Logo Placeholder */}
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">Website Logo</h2>
+          <h2 className="text-2xl font-bold text-white">COM-UK</h2>
         </div>
 
         {/* Success Message */}

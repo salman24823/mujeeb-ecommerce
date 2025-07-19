@@ -8,7 +8,7 @@ export default function FailedTransactionPage() {
       <div className="bg-gray-800 rounded-3xl shadow-2xl border border-red-500 w-full max-w-md px-8 py-10 text-center">
         {/* Logo Placeholder */}
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">Website Logo</h2>
+          <h2 className="text-2xl font-bold text-white">COM-UK</h2>
         </div>
 
         {/* Error Message */}
@@ -23,7 +23,7 @@ export default function FailedTransactionPage() {
         <div className="space-y-4">
           <Link
             href="/panel/wallet"
-            className="block w-full px-6 py-3 bg-transparent border border-green-500 text-green-500 font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-300"
+            className="block w-full px-6 py-3 bg-transparent border border-green-500 text-green-500 font-semibold rounded-lg shadow-md hover:bg-green-700 hover:text-white transition duration-300"
           >
             Retry Payment
           </Link>

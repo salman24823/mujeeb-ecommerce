@@ -11,6 +11,7 @@ import Logo from "@/../../public/logo.png"
 import Image from "next/image";
 
 export default function Home() {
+  
   const [passwordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -67,6 +68,7 @@ export default function Home() {
         {/* email Input */}
         <div className="relative mb-4">
           <User className="absolute max-md:w-5 h-5 left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+
           <input
             type="username"
             placeholder="username"
