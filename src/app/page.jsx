@@ -11,7 +11,7 @@ import Logo from "@/../../public/logo.png"
 import Image from "next/image";
 
 export default function Home() {
-  
+
   const [passwordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,6 +22,38 @@ export default function Home() {
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
+
+  const handleForget = () => {
+    try {
+
+      if (username == "admin") {
+        alert("You are Not an Admin.");
+        return;
+      }
+      if (!username) {
+        toast.error("Please enter your username.");
+        return;
+      }
+
+      const response = fetch("/api/forgetAccount", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
+      response.then((res) => {
+        if (res.ok) {
+          toast.success("An email has been sent to your registered email address with instructions to reset your password.");
+        } else {
+          toast.error("Failed to send reset instructions. Please try again.");
+        }
+      });
+
+    } catch (error) {
+      toast.error("An error occurred while processing your request.");
+    }
+  }
 
   const handleCredentialsLogin = async (e) => {
     e.preventDefault();
@@ -113,11 +145,15 @@ export default function Home() {
             Sign up
           </Link>
         </div>
+
+        <p onClick={handleForget} className="text-gray-500 hidden text-center hover:cursor-pointer hover:text-white" >Forget Account</p>
+
       </div>
 
       <p className="max-md:px-3 max-md:text-sm text-center text-gray-400">
         Welcome back! Please enter your credentials to access your account.
       </p>
+
     </div>
   );
 }
