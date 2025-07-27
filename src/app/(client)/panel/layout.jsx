@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@nextui-org/react";
@@ -55,13 +55,13 @@ const Layout = ({ children }) => {
       name: "CVV",
       path: "/panel/#",
       icon: <CreditCard className="w-5 h-5 text-gray-500" />,
-      commingSoon : <p className="px-2 border rounded-full bg-gray-700 border-gray-900">coming soon</p>
+      commingSoon: <p className="px-2 border rounded-full bg-gray-700 border-gray-900">coming soon</p>
     },
     {
       name: "Pre Order",
       path: "/panel/#",
       icon: <ShoppingBasket className="w-5 h-5 text-gray-500" />,
-      commingSoon : <p className="px-2 border rounded-full bg-gray-700 border-gray-900">coming soon</p>
+      commingSoon: <p className="px-2 border rounded-full bg-gray-700 border-gray-900">coming soon</p>
     },
     {
       name: "Cart",
@@ -107,9 +107,8 @@ const Layout = ({ children }) => {
         {/* Conditionally render Sidebar */}
         {pathname !== "/panel/change-password" && (
           <aside
-            className={`md:!sticky border-r md:border-0 border-gray-700 md:top-[52px] md:h-fit top-0 h-full lg:w-64 w-2/3 pt-4 max-[770px]:p-0 bg-gray-900 text-gray-400 transition-all duration-300 ease-in-out transform ${
-              sidebarOpen ? "translate-x-0" : "-translate-x-full"
-            } lg:translate-x-0 fixed lg:static top-0 left-0 z-10 lg:z-auto`}
+            className={`md:!sticky border-r md:border-0 border-gray-700 md:top-[52px] md:h-fit top-0 h-full lg:w-64 w-2/3 pt-4 max-[770px]:p-0 bg-gray-900 text-gray-400 transition-all duration-300 ease-in-out transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+              } lg:translate-x-0 fixed lg:static top-0 left-0 z-10 lg:z-auto`}
           >
             <ul>
               <li
@@ -127,11 +126,10 @@ const Layout = ({ children }) => {
                   >
                     <Link
                       href={route.path}
-                      className={`text-start block p-3 ${
-                        pathname === route.path
-                          ? "w-full font-semibold text-blue-600 flex gap-3 bg-gray-800 border-r-4 border-blue-500"
-                          : "text-gray-400 flex gap-3 w-full"
-                      }`}
+                      className={`text-start block p-3 ${pathname === route.path
+                        ? "w-full font-semibold text-blue-600 flex gap-3 bg-gray-800 border-r-4 border-blue-500"
+                        : "text-gray-400 flex gap-3 w-full"
+                        }`}
                     >
                       {route.icon}
                       {route.name}
@@ -169,7 +167,7 @@ const Layout = ({ children }) => {
             </button>
           </div>
         </div>
-    
+
       </div>
     </>
 

@@ -3,10 +3,10 @@
 import { Button, Spinner } from "@nextui-org/react";
 import { Key, Eye, EyeOff, Mail, User } from "lucide-react"; // Import the necessary icons
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Logo from "@/../../public/logo.png"
 import Image from "next/image";
 
@@ -16,6 +16,9 @@ export default function Home() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // session data 
+  const { data: session } = useSession();
 
   const router = useRouter();
 
@@ -78,7 +81,11 @@ export default function Home() {
         toast.error("Error in login: Invalid Email or Password");
       } else {
         toast.success("Login Successful.");
-        router.push("/panel/wallet"); // Navigate to dashboard
+        if (session?.user?.status === "pending") {
+          window.location.replace("/pending");
+        } else if (session?.user?.status === "activated") {
+          window.location.replace("/panel/wallet");
+        }
       }
     } catch (error) {
       console.log(error);

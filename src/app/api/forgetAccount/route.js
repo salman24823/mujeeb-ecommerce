@@ -1,4 +1,4 @@
-import dbConnection from "@/config/connectDB";
+import dbConnection from "@/app/config/connectDB";
 import UserModel from "@/models/userModel"; // Make sure you have a user model
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";

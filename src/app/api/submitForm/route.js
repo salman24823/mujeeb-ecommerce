@@ -1,4 +1,4 @@
-import dbConnection from "@/config/connectDB";
+import dbConnection from "@/app/config/connectDB";
 import formModel from "@/models/formModel";
 import { NextResponse } from "next/server";
 

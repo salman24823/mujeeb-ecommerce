@@ -28,10 +28,18 @@ const Header = () => {
     const url = pathname;
 
     console.log(url);
+    console.log(session,"session data");
+
+    // Update the current path based on session.user.status window.location.replace method
+    if (session?.user?.status === "pending") {
+      window.location.replace("/pending");
+    }
+
 
     setCurrentPath(url);
     console.log(url, "current path");
-  }, [pathname]);
+
+  }, [session,pathname]);
 
   // Define the title based on the current URL path
   const getTitle = () => {

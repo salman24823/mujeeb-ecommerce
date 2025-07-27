@@ -1,4 +1,4 @@
-import dbConnection from "@/config/connectDB";
+import dbConnection from "@/app/config/connectDB";
 import userModel from "@/models/userModel";
 import { NextResponse } from "next/server";
 import Papa from "papaparse";

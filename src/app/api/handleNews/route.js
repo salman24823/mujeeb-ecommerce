@@ -1,4 +1,4 @@
-import dbConnection from "@/config/connectDB";
+import dbConnection from "@/app/config/connectDB";
 import NewsModel from "@/models/newsModel";
 import { NextResponse } from "next/server";
 

@@ -24,13 +24,15 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'activated',
-    }
+      enum: ["pending", "activated", "inactive"],
+      default: "pending",
+    },
   },
   { timestamps: true } // Automatically add createdAt and updatedAt
 );
 
 // Create a model
-const userModel = mongoose.models.userModel || mongoose.model("userModel", userSchema);
+const userModel =
+  mongoose.models.userModel || mongoose.model("userModel", userSchema);
 
 export default userModel;

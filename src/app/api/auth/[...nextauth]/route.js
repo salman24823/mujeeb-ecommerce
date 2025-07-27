@@ -1,4 +1,4 @@
-import database from "@/config/connectDB";
+import database from "@/app/config/connectDB";
 import User from "@/models/userModel";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -24,9 +24,9 @@ export const authOptions = NextAuth({
             user = await User.findOne({ username });
           
             // If user exists and is NOT an admin, check if the status is activated
-            if (user && user.status !== "activated") {
-              return null; // User is not activated
-            }
+            // if (user && user.status !== "activated") {
+            //   return null; // User is not activated
+            // }
           }
 
           if (!user) {
@@ -65,14 +65,14 @@ export const authOptions = NextAuth({
       if (user) {
         token.id = user._id;
         token.username = user.username;
-        // token.email = user.email;
+        token.status = user.status;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.username = token.username;
-      // session.user.email = token.email;
+      session.user.status = token.status;
       return session;
     },
   },
