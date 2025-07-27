@@ -2,10 +2,13 @@
 
 import { Button, Spinner } from "@nextui-org/react";
 import { User, AtSign, Key, Eye, EyeOff } from "lucide-react"; // Added AtSign icon for Email
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Logo from "@/../../public/logo.png"
+
 
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false); // State for toggling password visibility
@@ -29,23 +32,23 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     setLoading(true);
-  
+
     // Basic form validation
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       setLoading(false); // Reset loading here
       return; // Ensure early exit
     }
-  
+
     // Create the new user object
     const newUser = {
       username,
       email,
       password,
     };
-  
+
     try {
       const response = await fetch("/api/register", {
         method: "POST",
@@ -54,9 +57,9 @@ export default function SignUp() {
         },
         body: JSON.stringify(newUser),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         // Handle successful response
         toast.success("Sign up Success.");
@@ -73,14 +76,14 @@ export default function SignUp() {
       setLoading(false);
     }
   };
-  
+
 
   return (
     <div className="p-5 h-screen gap-12 w-full bg-gradient-to-r from-gray-900 via-gray-950 to-gray-900 flex flex-col items-center justify-center">
       <div className="w-full sm:w-96 bg-gray-900 rounded-3xl px-8 max-md:px-4 py-10 shadow-2xl border border-gray-700">
-        <h2 className="text-xl font-semibold text-white mb-8 text-center">
-          Website Logo Here!
-        </h2>
+        <div className="flex justify-center mb-5 opacity-80">
+          <Image src={Logo} alt="Logo" width={50} />
+        </div>
 
         {/* Username Input */}
         <div className="relative mb-4">
