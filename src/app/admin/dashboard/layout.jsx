@@ -14,10 +14,10 @@ const Layout = ({ children }) => {
   
     useEffect(() => {
       if (session?.user?.email !== "admin@gmail.com") {
-        // alert("Not Authenticated")
-        // location.replace("/admin")
+        alert("Not Authenticated")
+        location.replace("/admin")
   
-        // return ""
+        return ""
       } 
     }, [session]);
 
