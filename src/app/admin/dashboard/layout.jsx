@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@nextui-org/react";
-import { CreditCard, LogOut, Globe, User2, Newspaper, SidebarCloseIcon, SidebarOpen } from "lucide-react";
+import { CreditCard, LogOut, Globe, User2, Newspaper, SidebarCloseIcon, SidebarOpen, Settings } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { MdCreditCardOff, MdSupport } from "react-icons/md";
@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
   const pathname = usePathname();
   
     useEffect(() => {
-      if (session?.user?.email !== "admin@gmail.com") {
+      if (session?.user?.username !== "admin") {
         alert("Not Authenticated")
         location.replace("/admin")
   
@@ -54,6 +54,11 @@ const Layout = ({ children }) => {
       name: "Queries",
       path: "/admin/dashboard/queries",
       icon: <MdSupport className="w-5 h-5 text-gray-500" />,
+    },
+    {
+      name: "Config",
+      path: "/admin/dashboard/config",
+      icon: <Settings className="w-5 h-5 text-gray-500" />,
     },
     {
       name: "Sign out",
