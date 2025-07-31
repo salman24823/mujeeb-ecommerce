@@ -1,6 +1,7 @@
 import dbConnection from "@/app/config/connectDB";
 import { NextResponse } from "next/server";
 import userModel from "@/models/userModel"
+import adminModel from "@/models/adminModel";
 
 export async function POST(req) {
 
@@ -9,7 +10,7 @@ export async function POST(req) {
 
     try {
         const data = await req.json(); // Parse the incoming JSON data
-        const { id, newPassword } = data;
+        const { id, newPassword , username} = data;
 
         // Validate the incoming data
         if (!id || !newPassword) {
@@ -20,7 +21,7 @@ export async function POST(req) {
         }
 
         // Find the user in the database
-        const result = await userModel.findById(id);
+        const result = await adminModel.findById(id);
 
         if (!result) {
             return NextResponse.json(

@@ -22,6 +22,34 @@ export default function Home() {
     setPasswordVisible((prev) => !prev);
   };
 
+  // async function handleForget(){
+
+  //   try {
+
+  //     const response = await fetch("/api/forget-password", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ username: username }),
+  //     })
+  //     const data = await response.json();
+  //     if (response.ok) {
+  //       // Show success message
+  //       toast.success("Password reset link sent to your email");
+  //     } else {
+  //       // Show error message
+  //       toast.error(data.message || "Failed to send password reset link");
+  //     }
+      
+  //   } catch (error) {
+
+  //     toast.error("An error occurred while processing your request");
+      
+  //   }
+
+  // }
+
   const handleCredentialsLogin = async (e) => {
     e.preventDefault();
 
@@ -102,6 +130,10 @@ export default function Home() {
           {loading ? <Spinner color="white" /> : "Login As Admin"}
         </Button>
       </div>
+
+      {/* <div>
+        <p className="max-md:px-3 max-md:text-sm text-center text-gray-400 hover:text-gray-100">Forget Your Password  <span className="text-blue-500 underline" onClick={handleForget}>Here</span> </p>
+      </div> */}
 
       <p className="max-md:px-3 max-md:text-sm text-center text-gray-400">
         Are You Facing any Issue or Want some Changes in your site?{" "}
