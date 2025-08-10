@@ -1,0 +1,92 @@
+Unzip the file and install dependencies
+
+apt update && apt install unzip -y
+unzip my-next-app.zip -d my-next-app
+cd my-next-app
+
+# Optional: rename directory
+mv my-next-app your-app-name
+cd your-app-name
+
+============================================
+
+Install Node.js & PM2
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install -y nodejs
+
+npm install -g pm2
+
+==========================================
+
+Install dependencies & build
+npm install
+npm run build
+
+==========================================
+
+ Start your Next.js app with PM2
+
+pm2 start npm --name "my-next-app" -- start
+pm2 save
+
+==========================================
+
+Configure Nginx as reverse proxy
+
+a. Install Nginx
+
+apt install nginx -y
+
+
+b. Create a config file
+
+nano /etc/nginx/sites-available/my-next-app
+
+c. Paste this configuration (edit domain):
+
+
+server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+
+d. Enable site & restart Nginx
+
+
+ln -s /etc/nginx/sites-available/my-next-app /etc/nginx/sites-enabled/
+nginx -t
+systemctl restart nginx
+
+================================================
+
+Setup firewall
+
+ufw allow 'Nginx Full'
+
+================================================
+
+Use a domain + SSL (Let's Encrypt)
+
+apt install certbot python3-certbot-nginx -y
+certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+Enable PM2 startup on boot
+
+pm2 startup
+
+pm2 save
+
+==============================================
+
+All Done !
