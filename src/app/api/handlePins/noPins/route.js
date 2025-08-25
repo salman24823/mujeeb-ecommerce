@@ -245,3 +245,36 @@ export async function PUT(req) {
     );
   }
 }
+
+export async function DELETE(req) {
+  try {
+
+    const { bin } = await req.json();
+    if (!bin) {
+      return NextResponse.json({ message: "BIN is required." }, { status: 400 });
+    }
+    const csvFilePinPath = path.join(process.cwd(), "public", "dumpsNoPin", "dumps.csv");
+    if (!fs.existsSync(csvFilePinPath)) {
+      return NextResponse.json({ message: "CSV file not found." }, { status: 500 });
+    }
+    const fileContent = fs.readFileSync(csvFilePinPath, "utf8");
+    if (!fileContent.trim()) {
+      return NextResponse.json({ message: "CSV file is empty." }, { status: 500 });
+    }
+    let rawData = Papa.parse(fileContent, { header: true, skipEmptyLines: true }).data;
+    const initialLength = rawData.length;
+    rawData = rawData.filter((row) => row.bin !== bin);
+    if (rawData.length === initialLength) {
+      return NextResponse.json({ message: "No matching BIN found." }, { status: 404 });
+    }
+    const updatedCSV = Papa.unparse(rawData);
+    fs.writeFileSync(csvFilePinPath, updatedCSV, "utf8");
+    return NextResponse.json({ message: `Entries with BIN ${bin} deleted successfully.` }, { status: 200 });
+    
+  } catch (error) {
+
+    console.error("❌ Error processing DELETE request:", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    
+  }
+}

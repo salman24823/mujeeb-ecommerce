@@ -11,6 +11,7 @@ import { Spinner } from "@nextui-org/react";
 import AddPins from "./AddPins";
 import { Button } from "@nextui-org/react"; // Assuming Button component is from nextui
 import { ChevronDown } from "lucide-react";
+import { toast } from "react-toastify";
 
 const DumpsNoPin = () => {
   const [products, setProducts] = useState([]);
@@ -127,6 +128,37 @@ const DumpsNoPin = () => {
     }
   };
 
+  function handleDelete(bin) {
+
+    // ask confirmation from user
+    if (!confirm("Are you sure you want to delete this pin?")) return;
+
+    try {
+
+      fetch("/api/handlePins/noPins", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bin
+        }),
+      }).then((res) => {
+        if (!res.ok) throw new Error("Failed to delete pin");
+
+        toast.success(`Bins ${bin} deleted successfully`);
+
+        loadCSV();
+      });
+
+    } catch (error) {
+
+      console.error("Error deleting pin:", error);
+
+    }
+
+  }
+
   return (
     <div className="space-y-8 max-w-screen-xl mx-auto">
       {/* Filters Section */}
@@ -144,9 +176,8 @@ const DumpsNoPin = () => {
               >
                 {filters[key] ? filters[key] : label}
                 <ChevronDown
-                  className={`ml-2 w-5 text-gray-300 transition-transform duration-300 ${
-                    dropdownOpen === key ? "rotate-180" : ""
-                  }`}
+                  className={`ml-2 w-5 text-gray-300 transition-transform duration-300 ${dropdownOpen === key ? "rotate-180" : ""
+                    }`}
                 />
               </Button>
 
@@ -207,6 +238,7 @@ const DumpsNoPin = () => {
                   <th className="py-3 px-4 text-left">Expiry</th>
                   <th className="py-3 px-4 text-left">Stock</th>
                   <th className="py-3 px-4 text-left">Price</th>
+                  <th className="py-3 px-4 text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -264,6 +296,9 @@ const DumpsNoPin = () => {
                             $ {product.price}
                           </span>
                         )}
+                      </td>
+                      <td>
+                        <Button onClick={() => handleDelete(product.bin)} size="sm" color="danger">Delete</Button>
                       </td>
                     </tr>
                   ))
